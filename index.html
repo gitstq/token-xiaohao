@@ -186,13 +186,13 @@
       top: 14px;
       left: 50%;
       z-index: 50;
-      display: grid;
-      min-width: min(360px, calc(100vw - 24px));
-      max-width: min(460px, calc(100vw - 24px));
-      gap: 2px;
-      padding: 8px 16px;
+      display: inline-flex;
+      max-width: min(360px, calc(100vw - 40px));
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
       border: 1px solid var(--notice-border);
-      border-radius: 14px;
+      border-radius: 999px;
       background: var(--notice-bg);
       color: var(--primary-soft);
       box-shadow: 0 14px 40px var(--shadow-soft);
@@ -214,15 +214,20 @@
     }
 
     .top-notice-title {
+      flex: 0 0 auto;
       font-size: 12px;
       font-weight: 700;
-      line-height: 1.15;
+      line-height: 1.1;
     }
 
     .top-notice-text {
+      min-width: 0;
+      overflow: hidden;
       color: var(--notice-text);
-      font-size: 13px;
-      line-height: 1.25;
+      font-size: 12px;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .header-inner {
