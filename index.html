@@ -1351,7 +1351,7 @@
           <span class="font-background">接口类型：</span>
           <span class="provider-row" id="providerRow" role="tablist" aria-label="接口类型" data-active-index="0">
             <span class="provider-thumb" aria-hidden="true"></span>
-            <button class="segment active" type="button" data-provider="openai">GPT</button>
+            <button class="segment active" type="button" data-provider="openai">OpenAI</button>
             <button class="segment" type="button" data-provider="claude">Claude / CC</button>
             <button class="segment" type="button" data-provider="custom">自定义</button>
           </span>
@@ -1589,7 +1589,7 @@
       $("providerRow").dataset.activeIndex = String(Math.max(0, providerButtons.findIndex((button) => button.dataset.provider === provider)));
       $("modelName").value = defaults[provider].model;
       syncModelSelect();
-      addEvent("Mode", `接口已切换为 ${provider === "openai" ? "GPT" : provider === "claude" ? "Claude / CC" : "自定义"}`);
+      addEvent("Mode", `接口已切换为 ${provider === "openai" ? "OpenAI" : provider === "claude" ? "Claude / CC" : "自定义"}`);
     }
 
     function validateSettings(settings) {
