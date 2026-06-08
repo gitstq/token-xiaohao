@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>Token 面板</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%235b62f4"/><path d="M18 18h28v8H36v22h-8V26H18z" fill="white"/></svg>'>
   <style>
@@ -17,10 +18,112 @@
       --primary-soft: #409eff;
       --border: #dbdfea;
       --control: #dcdfe6;
+      --topbar: #ffffff;
+      --field-bg: #ffffff;
+      --field-text: #606266;
+      --field-arrow: #a8abb2;
+      --menu-hover: #f5f7fa;
+      --range-track: #e4e7ed;
+      --switch-off: #dcdfe6;
+      --meter-bg: #eef2f8;
+      --notice-bg: #ecf5ff;
+      --notice-border: #d9ecff;
+      --notice-error-bg: #fef0f0;
+      --notice-error-border: #fde2e2;
+      --notice-text: #606266;
+      --warning: #e6a23c;
+      --icon: rgb(96, 98, 102);
+      --icon-main: rgb(9, 194, 222);
+      --overlay: rgba(238, 247, 255, .62);
+      --shadow-soft: rgba(82, 100, 132, .18);
+      --shadow-panel: rgba(38, 62, 100, .22);
+      --chart-grid: rgba(82, 100, 132, .08);
+      --chart-bg: rgba(244, 248, 253, .8);
+      --chart-text: #9aa7ba;
+      --chart-line: #4096ff;
+      --chart-dot: #08bfd8;
+      --status-bg: #f0f9eb;
+      --running-bg: #ecf5ff;
       --danger: #e85347;
       --success: #67c23a;
       --radius-round: 20px;
       font-family: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    html.dark {
+      color-scheme: dark;
+      --page: rgb(33, 34, 37);
+      --card: rgb(18, 18, 18);
+      --text: rgb(193, 206, 230);
+      --title: rgb(193, 206, 230);
+      --info: rgb(165, 167, 172);
+      --border: rgb(61, 63, 66);
+      --control: rgb(61, 63, 66);
+      --topbar: rgb(18, 18, 18);
+      --field-bg: rgb(24, 24, 24);
+      --field-text: rgb(200, 200, 200);
+      --field-arrow: rgb(165, 167, 172);
+      --menu-hover: rgb(33, 34, 37);
+      --range-track: rgb(61, 63, 66);
+      --switch-off: rgb(61, 63, 66);
+      --meter-bg: rgb(43, 45, 48);
+      --notice-bg: rgb(24, 37, 52);
+      --notice-border: rgb(45, 82, 118);
+      --notice-error-bg: rgb(48, 28, 28);
+      --notice-error-border: rgb(92, 49, 49);
+      --notice-text: rgb(200, 200, 200);
+      --warning: #d6a23f;
+      --icon: rgb(165, 167, 172);
+      --icon-main: rgb(30, 105, 131);
+      --overlay: rgba(18, 18, 18, .66);
+      --shadow-soft: rgba(0, 0, 0, .38);
+      --shadow-panel: rgba(0, 0, 0, .48);
+      --chart-grid: rgba(193, 206, 230, .08);
+      --chart-bg: rgba(24, 24, 24, .84);
+      --chart-text: rgb(165, 167, 172);
+      --chart-line: #409eff;
+      --chart-dot: rgb(30, 105, 131);
+      --status-bg: rgb(24, 43, 24);
+      --running-bg: rgb(24, 37, 52);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --page: rgb(33, 34, 37);
+        --card: rgb(18, 18, 18);
+        --text: rgb(193, 206, 230);
+        --title: rgb(193, 206, 230);
+        --info: rgb(165, 167, 172);
+        --border: rgb(61, 63, 66);
+        --control: rgb(61, 63, 66);
+        --topbar: rgb(18, 18, 18);
+        --field-bg: rgb(24, 24, 24);
+        --field-text: rgb(200, 200, 200);
+        --field-arrow: rgb(165, 167, 172);
+        --menu-hover: rgb(33, 34, 37);
+        --range-track: rgb(61, 63, 66);
+        --switch-off: rgb(61, 63, 66);
+        --meter-bg: rgb(43, 45, 48);
+        --notice-bg: rgb(24, 37, 52);
+        --notice-border: rgb(45, 82, 118);
+        --notice-error-bg: rgb(48, 28, 28);
+        --notice-error-border: rgb(92, 49, 49);
+        --notice-text: rgb(200, 200, 200);
+        --warning: #d6a23f;
+        --icon: rgb(165, 167, 172);
+        --icon-main: rgb(30, 105, 131);
+        --overlay: rgba(18, 18, 18, .66);
+        --shadow-soft: rgba(0, 0, 0, .38);
+        --shadow-panel: rgba(0, 0, 0, .48);
+        --chart-grid: rgba(193, 206, 230, .08);
+        --chart-bg: rgba(24, 24, 24, .84);
+        --chart-text: rgb(165, 167, 172);
+        --chart-line: #409eff;
+        --chart-dot: rgb(30, 105, 131);
+        --status-bg: rgb(24, 43, 24);
+        --running-bg: rgb(24, 37, 52);
+      }
     }
 
     * {
@@ -75,7 +178,7 @@
 
     .topbar {
       height: 67px;
-      background-color: #ffffff;
+      background-color: var(--topbar);
     }
 
     .top-notice {
@@ -88,11 +191,11 @@
       max-width: min(520px, calc(100vw - 24px));
       gap: 3px;
       padding: 12px 16px;
-      border: 1px solid #d9ecff;
+      border: 1px solid var(--notice-border);
       border-radius: 8px;
-      background: #ecf5ff;
+      background: var(--notice-bg);
       color: var(--primary-soft);
-      box-shadow: 0 14px 40px rgba(82, 100, 132, .18);
+      box-shadow: 0 14px 40px var(--shadow-soft);
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, -12px);
@@ -105,9 +208,9 @@
     }
 
     .top-notice.is-error {
-      border-color: #fde2e2;
-      background: #fef0f0;
-      color: #e85347;
+      border-color: var(--notice-error-border);
+      background: var(--notice-error-bg);
+      color: var(--danger);
     }
 
     .top-notice-title {
@@ -117,7 +220,7 @@
     }
 
     .top-notice-text {
-      color: #606266;
+      color: var(--notice-text);
       font-size: 14px;
       line-height: 1.45;
     }
@@ -173,7 +276,7 @@
       padding: 0 15px;
       border: 1px solid var(--control);
       border-radius: 999px;
-      background: #ffffff;
+      background: var(--field-bg);
       color: var(--title);
       font-size: 12px;
       line-height: 30px;
@@ -198,8 +301,8 @@
       padding: 18px;
       border: 1px solid var(--border);
       border-radius: 12px;
-      background: #ffffff;
-      box-shadow: 0 18px 50px rgba(82, 100, 132, .18);
+      background: var(--card);
+      box-shadow: 0 18px 50px var(--shadow-soft);
       color: var(--text);
       font-size: 14px;
       line-height: 1.7;
@@ -260,8 +363,8 @@
       border: 1px solid var(--control);
       border-radius: 4px;
       outline: 0;
-      background-color: #ffffff;
-      color: #606266;
+      background-color: var(--field-bg);
+      color: var(--field-text);
       transition: border-color .18s ease, box-shadow .18s ease;
     }
 
@@ -294,7 +397,7 @@
     }
 
     .mini-field {
-      color: #606266;
+      color: var(--field-text);
       font-size: 12px;
       font-weight: 600;
     }
@@ -328,8 +431,8 @@
       padding: 0 32px 0 11px;
       border: 1px solid var(--control);
       border-radius: 4px;
-      background: #ffffff;
-      color: #606266;
+      background: var(--field-bg);
+      color: var(--field-text);
       text-align: left;
       transition: border-color .18s ease, box-shadow .18s ease;
     }
@@ -341,8 +444,8 @@
       right: 12px;
       width: 7px;
       height: 7px;
-      border-right: 1.5px solid #a8abb2;
-      border-bottom: 1.5px solid #a8abb2;
+      border-right: 1.5px solid var(--field-arrow);
+      border-bottom: 1.5px solid var(--field-arrow);
       transform: translateY(-65%) rotate(45deg);
       transition: transform .18s ease;
     }
@@ -373,9 +476,9 @@
       max-height: 210px;
       overflow: auto;
       padding: 6px 0;
-      border: 1px solid #e4e7ed;
+      border: 1px solid var(--control);
       border-radius: 4px;
-      background: #ffffff;
+      background: var(--field-bg);
       box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
     }
 
@@ -389,7 +492,7 @@
       min-height: 34px;
       padding: 0 16px;
       background: transparent;
-      color: #606266;
+      color: var(--field-text);
       text-align: left;
       line-height: 34px;
       overflow: hidden;
@@ -398,7 +501,7 @@
     }
 
     .select-option:hover {
-      background: #f5f7fa;
+      background: var(--menu-hover);
     }
 
     .select-option.is-selected {
@@ -417,8 +520,8 @@
       padding: 0 12px;
       border: 1px solid var(--control);
       border-radius: 4px;
-      background: #ffffff;
-      color: #409eff;
+      background: var(--field-bg);
+      color: var(--primary-soft);
       font-size: 13px;
       font-weight: 600;
       white-space: nowrap;
@@ -447,7 +550,7 @@
     input[type="range"]::-webkit-slider-runnable-track {
       height: 6px;
       border-radius: 999px;
-      background: linear-gradient(90deg, var(--primary-soft) 0 var(--slider-percent), #e4e7ed var(--slider-percent) 100%);
+      background: linear-gradient(90deg, var(--primary-soft) 0 var(--slider-percent), var(--range-track) var(--slider-percent) 100%);
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -458,13 +561,13 @@
       margin-top: -7px;
       border: 2px solid var(--primary-soft);
       border-radius: 50%;
-      background: #ffffff;
+      background: var(--field-bg);
     }
 
     input[type="range"]::-moz-range-track {
       height: 6px;
       border-radius: 999px;
-      background: #e4e7ed;
+      background: var(--range-track);
     }
 
     input[type="range"]::-moz-range-progress {
@@ -478,7 +581,7 @@
       height: 18px;
       border: 2px solid var(--primary-soft);
       border-radius: 50%;
-      background: #ffffff;
+      background: var(--field-bg);
     }
 
     .visually-hidden {
@@ -524,7 +627,7 @@
       position: absolute;
       inset: 0;
       border-radius: 999px;
-      background: #dcdfe6;
+      background: var(--switch-off);
       transition: background .18s ease;
     }
 
@@ -536,7 +639,7 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #ffffff;
+      background: var(--field-bg);
       box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
       transition: transform .18s ease;
     }
@@ -559,7 +662,7 @@
       min-height: 104px;
       padding: 18px 15px 13px 24px;
       border: 1px solid var(--border);
-      background: #ffffff;
+      background: var(--card);
     }
 
     .showItem + .showItem {
@@ -579,7 +682,7 @@
       display: block;
       width: 40px;
       height: 24px;
-      color: rgb(96, 98, 102);
+      color: var(--icon);
     }
 
     .state-icon svg {
@@ -588,13 +691,13 @@
     }
 
     .state-icon-main {
-      color: rgb(9, 194, 222);
+      color: var(--icon-main);
     }
 
     .font-data {
       margin-top: 4px;
       overflow: hidden;
-      color: #606266;
+      color: var(--field-text);
       font-size: 28px;
       font-weight: 700;
       line-height: 2.2rem;
@@ -615,7 +718,7 @@
       margin-top: 7px;
       overflow: hidden;
       border-radius: 999px;
-      background: #eef2f8;
+      background: var(--meter-bg);
     }
 
     .meter span {
@@ -752,7 +855,7 @@
       position: fixed;
       inset: 0;
       z-index: 19;
-      background: rgba(238, 247, 255, .62);
+      background: var(--overlay);
       backdrop-filter: blur(2px);
     }
 
@@ -769,8 +872,8 @@
       padding: 12px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      background: #ffffff;
-      box-shadow: 0 22px 70px rgba(38, 62, 100, .22);
+      background: var(--card);
+      box-shadow: 0 22px 70px var(--shadow-panel);
       transform: translate(-50%, -50%);
     }
 
@@ -787,13 +890,13 @@
       border: 1px solid transparent;
       border-radius: 4px;
       background: transparent;
-      color: #909399;
+      color: var(--info);
       transition: border-color .18s ease, background-color .18s ease, color .18s ease;
     }
 
     .advanced-close:hover {
-      border-color: #c6e2ff;
-      background: #ecf5ff;
+      border-color: var(--notice-border);
+      background: var(--notice-bg);
       color: var(--primary-soft);
     }
 
@@ -826,8 +929,8 @@
       min-height: 32px;
       border: 1px solid var(--control);
       border-radius: 4px;
-      background: #ffffff;
-      color: #606266;
+      background: var(--field-bg);
+      color: var(--field-text);
       font-size: 13px;
       font-weight: 600;
       transition: border-color .18s ease, color .18s ease;
@@ -839,7 +942,7 @@
     }
 
     .notice {
-      color: #e6a23c;
+      color: var(--warning);
       font-size: 12px;
       line-height: 1.5;
     }
@@ -874,9 +977,9 @@
       height: 64px;
       border-radius: 8px;
       background:
-        linear-gradient(rgba(82, 100, 132, .08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(82, 100, 132, .08) 1px, transparent 1px),
-        rgba(244, 248, 253, .8);
+        linear-gradient(var(--chart-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--chart-grid) 1px, transparent 1px),
+        var(--chart-bg);
       background-size: 100% 50%, 8.33% 100%;
     }
 
@@ -900,7 +1003,7 @@
       justify-content: center;
       gap: 6px;
       border-radius: 4px;
-      background: #f0f9eb;
+      background: var(--status-bg);
       color: var(--success);
       font-size: 12px;
     }
@@ -913,7 +1016,7 @@
     }
 
     body.running .status-pill {
-      background: #ecf5ff;
+      background: var(--running-bg);
       color: var(--primary-soft);
     }
 
@@ -1154,6 +1257,14 @@
   </style>
 </head>
 <body>
+  <script>
+    const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSystemTheme = (event) => {
+      document.documentElement.classList.toggle("dark", event.matches);
+    };
+    syncSystemTheme(darkModeQuery);
+    darkModeQuery.addEventListener("change", syncSystemTheme);
+  </script>
   <header class="topbar">
     <div class="header-inner">
       <div class="brand">
@@ -1785,13 +1896,14 @@
     function drawChart() {
       const canvas = $("liveChart");
       const ctx = canvas.getContext("2d");
+      const styles = getComputedStyle(document.documentElement);
       const width = canvas.width;
       const height = canvas.height;
       const pad = 12;
       ctx.clearRect(0, 0, width, height);
 
       if (!state.samples.length) {
-        ctx.fillStyle = "#9aa7ba";
+        ctx.fillStyle = styles.getPropertyValue("--chart-text").trim() || "#9aa7ba";
         ctx.font = "13px Segoe UI";
         ctx.fillText("启动后显示实时曲线", pad, height / 2 + 4);
         return;
@@ -1808,7 +1920,7 @@
         if (index === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
-      ctx.strokeStyle = "#4096ff";
+      ctx.strokeStyle = styles.getPropertyValue("--chart-line").trim() || "#4096ff";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -1817,7 +1929,7 @@
       const last = samples[samples.length - 1];
       const x = pad + (samples.length - 1) * step;
       const y = height - pad - last.tokens / maxTokens * (height - pad * 2);
-      ctx.fillStyle = "#08bfd8";
+      ctx.fillStyle = styles.getPropertyValue("--chart-dot").trim() || "#08bfd8";
       ctx.beginPath();
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
