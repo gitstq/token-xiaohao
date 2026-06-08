@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="light dark">
   <title>Token 面板</title>
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%235b62f4"/><path d="M18 18h28v8H36v22h-8V26H18z" fill="white"/></svg>'>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
   <style>
     :root {
       color-scheme: light;
@@ -38,10 +39,11 @@
       --shadow-soft: rgba(82, 100, 132, .18);
       --shadow-panel: rgba(38, 62, 100, .22);
       --chart-grid: rgba(82, 100, 132, .08);
-      --chart-bg: rgba(244, 248, 253, .8);
+      --chart-bg: #ffffff;
       --chart-text: #9aa7ba;
       --chart-line: #4096ff;
-      --chart-dot: #08bfd8;
+      --chart-fill: rgba(64, 158, 255, .18);
+      --chart-dot: #4096ff;
       --status-bg: #f0f9eb;
       --running-bg: #ecf5ff;
       --danger: #e85347;
@@ -79,16 +81,17 @@
       --shadow-soft: rgba(0, 0, 0, .38);
       --shadow-panel: rgba(0, 0, 0, .48);
       --chart-grid: rgba(193, 206, 230, .08);
-      --chart-bg: rgba(24, 24, 24, .84);
+      --chart-bg: rgb(18, 18, 18);
       --chart-text: rgb(165, 167, 172);
       --chart-line: #409eff;
+      --chart-fill: rgba(64, 158, 255, .12);
       --chart-dot: rgb(30, 105, 131);
       --status-bg: rgb(24, 43, 24);
       --running-bg: rgb(24, 37, 52);
     }
 
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not(.light) {
         color-scheme: dark;
         --page: rgb(33, 34, 37);
         --card: rgb(18, 18, 18);
@@ -117,9 +120,10 @@
         --shadow-soft: rgba(0, 0, 0, .38);
         --shadow-panel: rgba(0, 0, 0, .48);
         --chart-grid: rgba(193, 206, 230, .08);
-        --chart-bg: rgba(24, 24, 24, .84);
+        --chart-bg: rgb(18, 18, 18);
         --chart-text: rgb(165, 167, 172);
         --chart-line: #409eff;
+        --chart-fill: rgba(64, 158, 255, .12);
         --chart-dot: rgb(30, 105, 131);
         --status-bg: rgb(24, 43, 24);
         --running-bg: rgb(24, 37, 52);
@@ -198,13 +202,12 @@
       box-shadow: 0 14px 40px var(--shadow-soft);
       opacity: 0;
       pointer-events: none;
-      transform: translate(-50%, -12px);
-      transition: opacity .18s ease, transform .18s ease;
+      transform: translate(-50%, -18px);
+      will-change: transform, opacity;
     }
 
     .top-notice.is-visible {
-      opacity: 1;
-      transform: translate(-50%, 0);
+      animation: topNoticeFlow 2s ease forwards;
     }
 
     .top-notice.is-error {
@@ -228,6 +231,25 @@
       line-height: 1.15;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    @keyframes topNoticeFlow {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -18px);
+      }
+      14% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      68% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, 0);
+      }
     }
 
     .header-inner {
@@ -327,36 +349,6 @@
       display: none;
     }
 
-    .about-panel {
-      position: relative;
-      z-index: 31;
-    }
-
-    .about-popover {
-      position: absolute;
-      top: 40px;
-      right: 0;
-      width: min(320px, calc(100vw - 24px));
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--card);
-      box-shadow: 0 18px 50px var(--shadow-soft);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .about-popover h2 {
-      margin-bottom: 6px;
-      color: var(--title);
-      font-size: 20px;
-    }
-
-    .about-popover a {
-      color: var(--primary-soft);
-    }
-
     .page {
       display: grid;
       height: calc(100dvh - 67px);
@@ -365,6 +357,10 @@
       gap: 8px;
       overflow: hidden;
       padding: 20px 10px 10px;
+    }
+
+    body.chart-open .page {
+      overflow-y: auto;
     }
 
     .console,
@@ -405,7 +401,7 @@
     .input,
     .select {
       width: 100%;
-      min-height: 32px;
+      height: 32px;
       border: 1px solid var(--control);
       border-radius: 8px;
       outline: 0;
@@ -450,7 +446,7 @@
 
     .model-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 7px;
     }
 
@@ -472,7 +468,7 @@
       position: relative;
       display: flex;
       width: 100%;
-      min-height: 32px;
+      height: 32px;
       align-items: center;
       padding: 0 32px 0 11px;
       border: 1px solid var(--control);
@@ -558,17 +554,19 @@
     .url-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(220px, 32%);
+      align-items: end;
       gap: 7px;
     }
 
     .key-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: end;
       gap: 7px;
     }
 
     .tiny-btn {
-      min-height: 32px;
+      height: 32px;
       padding: 0 12px;
       border: 1px solid var(--control);
       border-radius: 8px;
@@ -653,6 +651,13 @@
       gap: 12px;
     }
 
+    .budget-control {
+      display: inline-flex;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
+    }
+
     .switch-label {
       display: inline-flex;
       align-items: center;
@@ -660,6 +665,39 @@
       color: var(--text);
       font-size: 14px;
       white-space: nowrap;
+    }
+
+    .budget-inline {
+      display: inline-flex;
+      height: 32px;
+      align-items: center;
+      overflow: hidden;
+      border: 1px solid var(--control);
+      border-radius: 999px;
+      background: var(--field-bg);
+      color: var(--field-text);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .budget-inline.is-disabled {
+      opacity: .58;
+    }
+
+    .budget-caption {
+      padding: 0 10px 0 12px;
+      color: var(--info);
+    }
+
+    .budget-input {
+      width: 94px;
+      height: 100%;
+      flex: 0 0 94px;
+      border: 0;
+      border-left: 1px solid var(--control);
+      border-radius: 0;
+      background: transparent;
+      text-align: center;
     }
 
     .switch {
@@ -1043,33 +1081,20 @@
 
     .sparkline-panel {
       display: none;
-      gap: 6px;
       width: 100%;
       margin-top: 8px;
+      background: var(--chart-bg);
     }
 
     .sparkline-panel.is-visible {
       display: grid;
     }
 
-    .sparkline-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--info);
-      font-size: 12px;
-    }
-
-    canvas {
+    #liveChart {
       display: block;
       width: 100%;
-      height: 64px;
-      border-radius: 8px;
-      background:
-        linear-gradient(var(--chart-grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--chart-grid) 1px, transparent 1px),
-        var(--chart-bg);
-      background-size: 100% 50%, 8.33% 100%;
+      height: 400px;
+      background: var(--chart-bg);
     }
 
     .info-card {
@@ -1179,8 +1204,26 @@
 
       .font-background,
       .mini-main,
+      .budget-inline,
       .switch-label {
         font-size: 12px;
+      }
+
+      .budget-control {
+        gap: 8px;
+      }
+
+      .budget-inline {
+        height: 29px;
+      }
+
+      .budget-caption {
+        padding: 0 8px 0 10px;
+      }
+
+      .budget-input {
+        width: 86px;
+        flex-basis: 86px;
       }
 
       .title-row {
@@ -1191,7 +1234,7 @@
       .select,
       .tiny-btn,
       .segment {
-        min-height: 29px;
+        height: 29px;
         font-size: 12px;
       }
 
@@ -1281,10 +1324,6 @@
         grid-column: span 2;
       }
 
-      canvas {
-        height: 48px;
-      }
-
       .info-card {
         min-height: 44px;
         max-height: 50px;
@@ -1319,11 +1358,28 @@
       .select,
       .tiny-btn,
       .segment {
-        min-height: 26px;
+        height: 26px;
       }
 
       .switches {
         height: 24px;
+      }
+
+      .budget-control {
+        gap: 6px;
+      }
+
+      .budget-inline {
+        height: 26px;
+      }
+
+      .budget-caption {
+        padding: 0 6px 0 8px;
+      }
+
+      .budget-input {
+        width: 72px;
+        flex-basis: 72px;
       }
 
       .font-data {
@@ -1360,6 +1416,7 @@
     function applyTheme(preference = themePreference) {
       const useDark = preference === "dark" || (preference === "system" && darkModeQuery.matches);
       document.documentElement.classList.toggle("dark", useDark);
+      document.documentElement.classList.toggle("light", preference === "light");
       themePreference = preference;
       if (preference === "system") localStorage.removeItem(THEME_STORAGE_KEY);
       else localStorage.setItem(THEME_STORAGE_KEY, preference);
@@ -1391,15 +1448,7 @@
           <svg class="moon-icon" viewBox="0 0 24 24" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg>
           <svg class="sun-icon" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg>
         </button>
-        <details class="about-panel">
-          <summary class="home">关于</summary>
-          <div class="about-popover">
-            <h2>Token 面板</h2>
-            <p>用于在线消耗闲置 AI Token，支持 GPT、Claude / CC 兼容接口。</p>
-            <p>开源地址：<a href="https://github.com/gitstq/token-xiaohao" target="_blank" rel="noopener">token-xiaohao</a></p>
-            <p>UI 参考：<a href="https://github.com/ljxi/NetworkPanel" target="_blank" rel="noopener">NetworkPanel</a></p>
-          </div>
-        </details>
+        <a class="home" href="https://github.com/gitstq" target="_blank" rel="noopener">关于</a>
       </div>
     </div>
   </header>
@@ -1430,7 +1479,7 @@
             </button>
           </div>
           <span class="url-row">
-            <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
+            <input class="input" id="baseUrl" type="url" placeholder="https://api.openai.com/v1" autocomplete="off">
             <label class="mini-main">模型 ID：
               <span class="model-row">
                 <select class="native-select" id="modelName" tabindex="-1" aria-hidden="true">
@@ -1442,6 +1491,7 @@
                   </button>
                   <span class="select-menu" id="modelSelectMenu" role="listbox"></span>
                 </span>
+                <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
               </span>
             </label>
           </span>
@@ -1449,9 +1499,8 @@
 
         <span class="key-row">
           <label class="mini-main">KEY：
-            <input class="input" id="apiKey" type="password" placeholder="sk-... / 兼容接口密钥" autocomplete="off">
+            <input class="input" id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
           </label>
-          <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
         </span>
 
         <div class="thread-block">
@@ -1461,19 +1510,25 @@
         </div>
 
         <div class="switches">
+          <span class="budget-control">
+            <label class="switch-label">
+              <span class="switch">
+                <input id="budgetGuard" type="checkbox" checked>
+                <span class="track"></span>
+              </span>
+              预算保护
+            </label>
+            <label class="budget-inline" id="budgetInline">
+              <span class="budget-caption">预算</span>
+              <input class="input budget-input" id="tokenBudget" type="number" min="100" max="10000000" step="100" value="100000">
+            </label>
+          </span>
           <label class="switch-label">
             <span class="switch">
-              <input id="budgetGuard" type="checkbox" checked>
+              <input id="backgroundRun" type="checkbox">
               <span class="track"></span>
             </span>
-            预算保护
-          </label>
-          <label class="switch-label">
-            <span class="switch">
-              <input id="autoModels" type="checkbox">
-              <span class="track"></span>
-            </span>
-            自动获取模型
+            保持后台运行
           </label>
         </div>
       </form>
@@ -1538,9 +1593,6 @@
                 <label class="mini-field">轮次
                   <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
                 </label>
-                <label class="mini-field">Token 预算
-                  <input class="input" id="tokenBudget" type="number" min="100" max="10000000" step="100" value="100000">
-                </label>
                 <label class="mini-field">单次输出
                   <input class="input" id="maxTokens" type="number" min="16" max="8192" step="16" value="1024">
                 </label>
@@ -1575,11 +1627,7 @@
       </div>
 
       <div class="sparkline-panel" id="chartPanel">
-        <div class="sparkline-head">
-          <span>实时曲线</span>
-          <span id="activeWorkers">并发 0</span>
-        </div>
-        <canvas id="liveChart" width="900" height="88" aria-label="Token 实时曲线"></canvas>
+        <div id="liveChart" aria-label="Token 图表"></div>
       </div>
     </section>
 
@@ -1599,6 +1647,7 @@
     const providerButtons = Array.from(document.querySelectorAll("[data-provider]"));
     const formatNumber = (value) => Math.round(value || 0).toLocaleString("zh-CN");
     const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const LOCAL_PROXY_ORIGIN = "http://127.0.0.1:8787";
 
     const defaults = {
       openai: {
@@ -1626,14 +1675,22 @@
       latencies: [],
       samples: [],
       settings: {},
-      noticeTimer: null
+      noticeTimer: null,
+      wakeLock: null,
+      localProxyUsed: false,
+      chart: null
     };
+
+    function getBaseUrlValue() {
+      const input = $("baseUrl");
+      return input.value.trim() || input.placeholder.trim();
+    }
 
     function getSettings() {
       return {
         provider: state.provider,
         budgetGuard: $("budgetGuard").checked,
-        url: $("baseUrl").value.trim(),
+        url: getBaseUrlValue(),
         apiKey: $("apiKey").value.trim(),
         model: $("modelName").value.trim(),
         temperature: Number($("temperature").value),
@@ -1703,6 +1760,28 @@
       return parsed.toString();
     }
 
+    function buildLocalProxyUrl(targetUrl) {
+      const url = new URL("/", LOCAL_PROXY_ORIGIN);
+      url.searchParams.set("target", targetUrl);
+      return url.toString();
+    }
+
+    function isBrowserNetworkError(error) {
+      const message = error && error.message ? error.message : String(error);
+      return /Failed to fetch|NetworkError|Load failed/i.test(message);
+    }
+
+    async function fetchWithLocalProxy(targetUrl, options = {}) {
+      try {
+        return await fetch(targetUrl, options);
+      } catch (error) {
+        if (!isBrowserNetworkError(error)) throw error;
+        const proxied = await fetch(buildLocalProxyUrl(targetUrl), options);
+        state.localProxyUsed = true;
+        return proxied;
+      }
+    }
+
     async function fetchModels() {
       if (state.running) return;
       const settings = getSettings();
@@ -1718,7 +1797,8 @@
       $("fetchModelsBtn").disabled = true;
       $("fetchModelsBtn").textContent = "获取中";
       try {
-        const response = await fetch(buildModelUrl(settings.url), {
+        state.localProxyUsed = false;
+        const response = await fetchWithLocalProxy(buildModelUrl(settings.url), {
           method: "GET",
           headers: buildHeadersFor(settings),
           signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined
@@ -1735,9 +1815,9 @@
         $("modelName").value = models[0];
         syncModelSelect();
         $("advancedPanel").open = false;
-        addEvent("Models", `已获取 ${models.length} 个模型`);
+        addEvent("Models", state.localProxyUsed ? `本地代理已获取 ${models.length} 个模型` : `已获取 ${models.length} 个模型`);
       } catch (error) {
-        const message = error && error.message ? error.message : String(error);
+        const message = formatRequestError(error);
         addEvent("Error", `获取模型失败：${message}`, true);
       } finally {
         $("fetchModelsBtn").disabled = false;
@@ -1788,6 +1868,17 @@
       $("modelSelectTrigger").setAttribute("aria-expanded", "false");
     }
 
+    function formatRequestError(error) {
+      const message = error && error.message ? error.message : String(error);
+      if (message.includes(LOCAL_PROXY_ORIGIN)) {
+        return "请先启动本地代理：node local-proxy.js";
+      }
+      if (/Failed to fetch|NetworkError|Load failed/i.test(message)) {
+        return "接口未开放浏览器 CORS，且本地代理不可用";
+      }
+      return message;
+    }
+
     async function startRun() {
       if (state.running) return stopRun();
       const settings = getSettings();
@@ -1817,6 +1908,7 @@
       setConfigDisabled(true);
       updateMetrics();
       drawChart();
+      await enableBackgroundRun();
       addEvent("Start", `${settings.rounds} 轮 / ${settings.concurrency} 线程`);
 
       const workers = Array.from({ length: settings.concurrency }, (_, index) => runWorker(index + 1));
@@ -1837,7 +1929,7 @@
           const result = await realRequest(id);
           registerResult(id, true, result.tokens, result.latency, "");
         } catch (error) {
-          const message = error && error.message ? error.message : String(error);
+          const message = formatRequestError(error);
           registerResult(id, false, 0, state.lastLatency, message);
         } finally {
           state.activeWorkers -= 1;
@@ -1848,9 +1940,28 @@
       }
     }
 
+    async function enableBackgroundRun() {
+      if (!$("backgroundRun").checked || state.wakeLock || !("wakeLock" in navigator)) return;
+      try {
+        state.wakeLock = await navigator.wakeLock.request("screen");
+        state.wakeLock.addEventListener("release", () => {
+          state.wakeLock = null;
+        });
+      } catch {
+        addEvent("Mode", "浏览器不支持保持后台运行");
+      }
+    }
+
+    async function disableBackgroundRun() {
+      if (!state.wakeLock) return;
+      const lock = state.wakeLock;
+      state.wakeLock = null;
+      await lock.release().catch(() => {});
+    }
+
     async function realRequest(id) {
       const started = performance.now();
-      const response = await fetch(buildCompletionUrl(state.settings.url, state.settings.provider), {
+      const response = await fetchWithLocalProxy(buildCompletionUrl(state.settings.url, state.settings.provider), {
         method: "POST",
         headers: buildHeaders(),
         body: JSON.stringify(buildBody(id)),
@@ -1967,7 +2078,6 @@
         ? `成功 ${formatNumber(successRate)}% / ${formatNumber(avgLatency)}ms`
         : "延迟 -";
       $("requestBar").style.width = `${Math.min(100, state.completed / target * 100)}%`;
-      $("activeWorkers").textContent = `并发 ${state.activeWorkers}`;
       $("threadNumValue").textContent = String(settings.concurrency || 1);
       syncConcurrencySlider();
     }
@@ -1986,16 +2096,19 @@
     }
 
     function showTopNotice(badge, text, isError = false) {
+      const notice = $("topNotice");
       $("topNoticeTitle").textContent = badge;
       $("topNoticeText").textContent = text;
-      $("topNotice").classList.toggle("is-error", isError);
-      $("topNotice").classList.add("is-visible");
-      $("topNotice").setAttribute("aria-hidden", "false");
+      notice.classList.toggle("is-error", isError);
+      notice.classList.remove("is-visible");
+      void notice.offsetWidth;
+      notice.classList.add("is-visible");
+      notice.setAttribute("aria-hidden", "false");
       clearTimeout(state.noticeTimer);
       state.noticeTimer = setTimeout(() => {
-        $("topNotice").classList.remove("is-visible");
-        $("topNotice").setAttribute("aria-hidden", "true");
-      }, 3600);
+        notice.classList.remove("is-visible");
+        notice.setAttribute("aria-hidden", "true");
+      }, 2000);
     }
 
     function escapeHtml(value) {
@@ -2009,45 +2122,64 @@
     }
 
     function drawChart() {
-      const canvas = $("liveChart");
-      const ctx = canvas.getContext("2d");
-      const styles = getComputedStyle(document.documentElement);
-      const width = canvas.width;
-      const height = canvas.height;
-      const pad = 12;
-      ctx.clearRect(0, 0, width, height);
+      if (!window.echarts) return;
+      const chartEl = $("liveChart");
 
-      if (!state.samples.length) {
-        ctx.fillStyle = styles.getPropertyValue("--chart-text").trim() || "#9aa7ba";
-        ctx.font = "13px Segoe UI";
-        ctx.fillText("启动后显示实时曲线", pad, height / 2 + 4);
-        return;
-      }
+      if (!state.chart) state.chart = echarts.init(chartEl, null, { renderer: "canvas" });
 
-      const samples = state.samples.slice(-34);
-      const maxTokens = Math.max(...samples.map((sample) => sample.tokens), 1);
-      const step = samples.length > 1 ? (width - pad * 2) / (samples.length - 1) : width - pad * 2;
+      const data = state.samples.length
+        ? state.samples.slice(-200).map((sample) => [sample.at, sample.tokens])
+        : [[Date.now(), 0]];
 
-      ctx.beginPath();
-      samples.forEach((sample, index) => {
-        const x = pad + index * step;
-        const y = height - pad - sample.tokens / maxTokens * (height - pad * 2);
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = styles.getPropertyValue("--chart-line").trim() || "#4096ff";
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.stroke();
-
-      const last = samples[samples.length - 1];
-      const x = pad + (samples.length - 1) * step;
-      const y = height - pad - last.tokens / maxTokens * (height - pad * 2);
-      ctx.fillStyle = styles.getPropertyValue("--chart-dot").trim() || "#08bfd8";
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
+      state.chart.setOption({
+        tooltip: {
+          trigger: "axis",
+          formatter(params) {
+            const item = params[0];
+            return `${new Date(item.data[0]).toLocaleString()}<br />${formatNumber(item.data[1])} Token`;
+          }
+        },
+        title: {
+          left: "left",
+          text: "Token 图表"
+        },
+        xAxis: {
+          type: "time",
+          boundaryGap: false,
+          axisLabel: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          }
+        },
+        yAxis: {
+          type: "value",
+          axisLabel: {
+            formatter(value) {
+              return value ? formatNumber(value) : 0;
+            }
+          }
+        },
+        series: [
+          {
+            name: "Token",
+            type: "line",
+            smooth: false,
+            symbol: "none",
+            areaStyle: {},
+            data
+          }
+        ],
+        grid: {
+          x: 0,
+          y: 40,
+          x2: 8,
+          y2: 10,
+          containLabel: true
+        }
+      }, true);
+      state.chart.resize();
     }
 
     function stopRun() {
@@ -2066,6 +2198,7 @@
       $("mainAction").setAttribute("aria-label", "启动消耗");
       $("actionText").textContent = "启动消耗";
       setConfigDisabled(false);
+      disableBackgroundRun();
       updateMetrics();
       drawChart();
       addEvent("Done", message);
@@ -2107,6 +2240,12 @@
         "modelSelectTrigger"
       ].forEach((id) => { $(id).disabled = disabled; });
       $("resetBtn").disabled = disabled;
+      syncBudgetInput();
+    }
+
+    function syncBudgetInput() {
+      $("tokenBudget").disabled = state.running || !$("budgetGuard").checked;
+      $("budgetInline").classList.toggle("is-disabled", $("tokenBudget").disabled);
     }
 
     providerButtons.forEach((button) => {
@@ -2117,6 +2256,7 @@
 
     $("themeToggle").addEventListener("click", () => {
       applyTheme(document.documentElement.classList.contains("dark") ? "light" : "dark");
+      drawChart();
     });
 
     function closeAdvancedPanel() {
@@ -2149,11 +2289,15 @@
       if (event.key === "Escape") closeModelSelect();
     });
     $("chartToggleBtn").addEventListener("click", () => {
-      $("chartPanel").classList.toggle("is-visible");
+      const isOpen = $("chartPanel").classList.toggle("is-visible");
+      document.body.classList.toggle("chart-open", isOpen);
       drawChart();
     });
+    window.addEventListener("resize", () => {
+      if (state.chart) state.chart.resize();
+    });
     $("copyUrlBtn").addEventListener("click", async () => {
-      const url = $("baseUrl").value.trim();
+      const url = getBaseUrlValue();
       if (!url) {
         addEvent("Error", "没有可复制的接口地址", true);
         return;
@@ -2165,14 +2309,18 @@
         addEvent("Copy", url);
       }
     });
-    $("autoModels").addEventListener("change", () => {
-      if ($("autoModels").checked && $("baseUrl").value.trim() && $("apiKey").value.trim()) fetchModels();
+    $("backgroundRun").addEventListener("change", () => {
+      if (state.running) {
+        if ($("backgroundRun").checked) enableBackgroundRun();
+        else disableBackgroundRun();
+      }
     });
-    $("baseUrl").addEventListener("change", () => {
-      if ($("autoModels").checked && $("apiKey").value.trim()) fetchModels();
+    $("budgetGuard").addEventListener("change", () => {
+      syncBudgetInput();
+      updateMetrics();
     });
-    $("apiKey").addEventListener("change", () => {
-      if ($("autoModels").checked && $("baseUrl").value.trim()) fetchModels();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && state.running) enableBackgroundRun();
     });
 
     $("concurrencyRange").addEventListener("input", () => {
@@ -2191,6 +2339,7 @@
     });
 
     updateMetrics();
+    syncBudgetInput();
     fillModelOptions([]);
     drawChart();
   </script>
