@@ -82,6 +82,12 @@
       backdrop-filter: blur(16px);
     }
 
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .brand {
       display: flex;
       min-width: 0;
@@ -118,6 +124,31 @@
       color: #4e5d78;
       font-size: 14px;
       white-space: nowrap;
+    }
+
+    .repo-link {
+      display: inline-flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 6px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #4352d8;
+      font-size: 14px;
+      font-weight: 720;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .repo-link::before {
+      content: "";
+      width: 13px;
+      height: 13px;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      box-shadow: inset 0 -4px 0 -2px currentColor;
     }
 
     .dot {
@@ -567,6 +598,16 @@
       gap: 10px;
     }
 
+    .model-field {
+      grid-column: span 2;
+    }
+
+    .model-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
     .mini-field {
       display: grid;
       gap: 5px;
@@ -580,6 +621,11 @@
       color: #7b6b3b;
       font-size: 12px;
       line-height: 1.55;
+    }
+
+    .advanced-actions {
+      display: flex;
+      justify-content: flex-end;
     }
 
     .status-strip {
@@ -650,6 +696,17 @@
         height: 34px;
       }
 
+      .top-actions {
+        gap: 6px;
+      }
+
+      .repo-link,
+      .status {
+        min-height: 30px;
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
       .page {
         height: calc(100dvh - 58px);
         padding: 10px;
@@ -669,6 +726,10 @@
       .advanced-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 7px;
+      }
+
+      .model-field {
+        grid-column: span 2;
       }
 
       .advanced {
@@ -792,9 +853,12 @@
       <div class="brand-mark" aria-hidden="true">T</div>
       <h1>Token 面板</h1>
     </div>
-    <div class="status" aria-live="polite">
-      <span class="dot"></span>
-      <span id="runState">待机中</span>
+    <div class="top-actions">
+      <a class="repo-link" href="https://github.com/gitstq/token-xiaohao" target="_blank" rel="noopener">GitHub</a>
+      <div class="status" aria-live="polite">
+        <span class="dot"></span>
+        <span id="runState">待机中</span>
+      </div>
     </div>
   </header>
 
@@ -812,7 +876,7 @@
 
         <div class="line">
           <label class="label" for="baseUrl">URL：</label>
-          <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1/chat/completions" autocomplete="off">
+          <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
         </div>
 
         <div class="line">
@@ -829,13 +893,6 @@
         </div>
 
         <div class="switches">
-          <label class="switch-label">
-            <span class="switch">
-              <input id="demoMode" type="checkbox" checked>
-              <span class="track"></span>
-            </span>
-            演示模式
-          </label>
           <label class="switch-label">
             <span class="switch">
               <input id="budgetGuard" type="checkbox" checked>
@@ -899,8 +956,13 @@
           <summary>参数设置</summary>
           <div class="advanced">
             <div class="advanced-grid">
-              <label class="mini-field">模型
-                <input class="input" id="modelName" type="text" value="gpt-4o-mini">
+              <label class="mini-field model-field">模型 ID
+                <span class="model-row">
+                  <select class="select" id="modelName">
+                    <option value="">请先获取模型</option>
+                  </select>
+                  <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
+                </span>
               </label>
               <label class="mini-field">轮次
                 <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
@@ -927,6 +989,9 @@
               </label>
             </div>
             <p class="notice">真实模式会调用你填写的接口并产生用量。若供应商拦截浏览器跨域请求，请填写支持 CORS 的兼容转发 URL。</p>
+            <div class="advanced-actions">
+              <button class="tiny-btn" id="closeSettingsBtn" type="button">应用</button>
+            </div>
           </div>
         </details>
         <button class="tiny-btn" id="resetBtn" type="button">重置</button>
@@ -934,7 +999,7 @@
 
       <section class="status-strip" aria-label="最近状态">
         <div class="event-list" id="eventList">
-          <div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>
+          <div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>
         </div>
       </section>
     </section>
@@ -954,16 +1019,16 @@
 
     const defaults = {
       openai: {
-        url: "https://api.openai.com/v1/chat/completions",
-        model: "gpt-4o-mini"
+        url: "https://api.openai.com/v1",
+        model: ""
       },
       claude: {
-        url: "https://api.anthropic.com/v1/messages",
-        model: "claude-3-5-haiku-latest"
+        url: "https://api.anthropic.com/v1",
+        model: ""
       },
       custom: {
-        url: "https://example.com/v1/chat/completions",
-        model: "custom-model"
+        url: "https://example.com/v1",
+        model: ""
       }
     };
 
@@ -987,7 +1052,6 @@
     function getSettings() {
       return {
         provider: state.provider,
-        demoMode: $("demoMode").checked,
         budgetGuard: $("budgetGuard").checked,
         url: $("baseUrl").value.trim(),
         apiKey: $("apiKey").value.trim(),
@@ -1013,17 +1077,108 @@
     }
 
     function validateSettings(settings) {
-      if (!settings.demoMode) {
-        if (!settings.url) return "真实模式需要填写 URL";
-        if (!settings.apiKey) return "真实模式需要填写 KEY";
+      if (!settings.url) return "请先填写 URL";
+      try {
+        new URL(settings.url);
+      } catch {
+        return "URL 格式不正确";
       }
-      if (!settings.model) return "模型不能为空";
+      if (!settings.apiKey) return "请先填写 KEY";
+      if (!settings.model) return "请先填写或选择模型 ID";
       if (!settings.prompt) return "提示词不能为空";
       if (!Number.isFinite(settings.rounds) || settings.rounds < 1) return "轮次必须大于 0";
       if (!Number.isFinite(settings.concurrency) || settings.concurrency < 1) return "线程数必须大于 0";
       if (!Number.isFinite(settings.tokenBudget) || settings.tokenBudget < 100) return "Token 预算至少为 100";
       if (!Number.isFinite(settings.maxTokens) || settings.maxTokens < 16) return "单次输出至少为 16";
       return "";
+    }
+
+    function buildModelUrl(url) {
+      const parsed = new URL(url);
+      const path = parsed.pathname.replace(/\/+$/, "");
+      if (/\/chat\/completions$/i.test(path)) {
+        parsed.pathname = path.replace(/\/chat\/completions$/i, "/models");
+      } else if (/\/messages$/i.test(path)) {
+        parsed.pathname = path.replace(/\/messages$/i, "/models");
+      } else if (!/\/models$/i.test(path)) {
+        parsed.pathname = path.endsWith("/v1") ? `${path}/models` : `${path}/v1/models`;
+      }
+      parsed.search = "";
+      parsed.hash = "";
+      return parsed.toString();
+    }
+
+    function buildCompletionUrl(url, provider) {
+      const parsed = new URL(url);
+      const path = parsed.pathname.replace(/\/+$/, "");
+      parsed.search = "";
+      parsed.hash = "";
+      if (/\/chat\/completions$/i.test(path) || /\/messages$/i.test(path)) return parsed.toString();
+      if (provider === "claude") {
+        parsed.pathname = path.endsWith("/v1") ? `${path}/messages` : `${path}/v1/messages`;
+      } else {
+        parsed.pathname = path.endsWith("/v1") ? `${path}/chat/completions` : `${path}/v1/chat/completions`;
+      }
+      return parsed.toString();
+    }
+
+    async function fetchModels() {
+      if (state.running) return;
+      const settings = getSettings();
+      if (!settings.url) {
+        addEvent("Error", "请先填写 URL", true);
+        return;
+      }
+      if (!settings.apiKey) {
+        addEvent("Error", "获取模型需要填写 KEY", true);
+        return;
+      }
+
+      $("fetchModelsBtn").disabled = true;
+      $("fetchModelsBtn").textContent = "获取中";
+      try {
+        const response = await fetch(buildModelUrl(settings.url), {
+          method: "GET",
+          headers: buildHeadersFor(settings),
+          signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) {
+          const detail = payload?.error?.message || payload?.message || response.statusText;
+          throw new Error(`${response.status} ${detail}`);
+        }
+        const models = normalizeModels(payload);
+
+        if (!models.length) throw new Error("没有解析到模型 ID");
+        fillModelOptions(models);
+        $("modelName").value = models[0];
+        $("advancedPanel").open = false;
+        addEvent("Models", `已获取 ${models.length} 个模型`);
+      } catch (error) {
+        const message = error && error.message ? error.message : String(error);
+        addEvent("Error", `获取模型失败：${message}`, true);
+      } finally {
+        $("fetchModelsBtn").disabled = false;
+        $("fetchModelsBtn").textContent = "获取模型";
+      }
+    }
+
+    function normalizeModels(payload) {
+      const list = Array.isArray(payload?.data) ? payload.data
+        : Array.isArray(payload?.models) ? payload.models
+        : Array.isArray(payload) ? payload
+        : [];
+      return [...new Set(list.map((item) => {
+        if (typeof item === "string") return item;
+        return item?.id || item?.name || item?.model || "";
+      }).filter(Boolean))];
+    }
+
+    function fillModelOptions(models) {
+      const options = models.length
+        ? models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("")
+        : '<option value="">请先获取模型</option>';
+      $("modelName").innerHTML = options;
     }
 
     async function startRun() {
@@ -1050,7 +1205,7 @@
       state.events = [];
 
       document.body.classList.add("running");
-      $("runState").textContent = settings.demoMode ? "演示运行中" : "真实运行中";
+      $("runState").textContent = "真实运行中";
       $("mainAction").setAttribute("aria-label", "停止消耗");
       $("actionText").textContent = "停止消耗";
       setConfigDisabled(true);
@@ -1073,9 +1228,7 @@
         updateMetrics();
 
         try {
-          const result = state.settings.demoMode
-            ? await demoRequest(id, workerId)
-            : await realRequest(id);
+          const result = await realRequest(id);
           registerResult(id, true, result.tokens, result.latency, "");
         } catch (error) {
           const message = error && error.message ? error.message : String(error);
@@ -1089,21 +1242,9 @@
       }
     }
 
-    async function demoRequest(id, workerId) {
-      const started = performance.now();
-      const latency = 360 + Math.round(Math.random() * 980) + workerId * 38;
-      await sleep(latency);
-      const promptTokens = estimateTokens(state.settings.prompt);
-      const outputTokens = Math.round(state.settings.maxTokens * (0.38 + Math.random() * 0.58));
-      return {
-        latency: Math.round(performance.now() - started),
-        tokens: promptTokens + outputTokens + id % 7
-      };
-    }
-
     async function realRequest(id) {
       const started = performance.now();
-      const response = await fetch(state.settings.url, {
+      const response = await fetch(buildCompletionUrl(state.settings.url, state.settings.provider), {
         method: "POST",
         headers: buildHeaders(),
         body: JSON.stringify(buildBody(id)),
@@ -1130,12 +1271,16 @@
     }
 
     function buildHeaders() {
+      return buildHeadersFor(state.settings);
+    }
+
+    function buildHeadersFor(settings) {
       const headers = { "content-type": "application/json" };
-      if (state.settings.provider === "claude") {
-        headers["x-api-key"] = state.settings.apiKey;
+      if (settings.provider === "claude") {
+        headers["x-api-key"] = settings.apiKey;
         headers["anthropic-version"] = "2023-06-01";
       } else {
-        headers.authorization = `Bearer ${state.settings.apiKey}`;
+        headers.authorization = `Bearer ${settings.apiKey}`;
       }
       return headers;
     }
@@ -1314,7 +1459,7 @@
       state.latencies = [];
       state.samples = [];
       state.events = [];
-      $("eventList").innerHTML = '<div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>';
+      $("eventList").innerHTML = '<div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>';
       updateMetrics();
       drawChart();
     }
@@ -1322,7 +1467,6 @@
     function setConfigDisabled(disabled) {
       providerButtons.forEach((button) => { button.disabled = disabled; });
       [
-        "demoMode",
         "budgetGuard",
         "baseUrl",
         "apiKey",
@@ -1335,7 +1479,9 @@
         "temperature",
         "intervalMs",
         "method",
-        "promptText"
+        "promptText",
+        "fetchModelsBtn",
+        "closeSettingsBtn"
       ].forEach((id) => { $(id).disabled = disabled; });
       $("resetBtn").disabled = disabled;
     }
@@ -1346,6 +1492,8 @@
 
     $("mainAction").addEventListener("click", startRun);
     $("resetBtn").addEventListener("click", resetStats);
+    $("fetchModelsBtn").addEventListener("click", fetchModels);
+    $("closeSettingsBtn").addEventListener("click", () => { $("advancedPanel").open = false; });
 
     $("concurrencyRange").addEventListener("input", () => {
       $("concurrency").value = $("concurrencyRange").value;
@@ -1361,6 +1509,7 @@
     });
 
     updateMetrics();
+    fillModelOptions([]);
     drawChart();
   </script>
 </body>
