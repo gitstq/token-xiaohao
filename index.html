@@ -272,20 +272,54 @@
     }
 
     .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       position: relative;
       margin-top: 5px;
     }
 
     .home {
+      display: inline-flex;
       min-height: 32px;
       padding: 0 15px;
       border: 1px solid var(--control);
       border-radius: 999px;
       background: var(--field-bg);
+      align-items: center;
+      justify-content: center;
       color: var(--title);
       font-size: 12px;
       line-height: 30px;
       list-style: none;
+    }
+
+    .theme-toggle {
+      width: 32px;
+      min-width: 32px;
+      padding: 0;
+    }
+
+    .theme-toggle svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle .sun-icon {
+      display: none;
+    }
+
+    html.dark .theme-toggle .sun-icon {
+      display: block;
+    }
+
+    html.dark .theme-toggle .moon-icon {
+      display: none;
     }
 
     .home::-webkit-details-marker,
@@ -1319,12 +1353,28 @@
 </head>
 <body>
   <script>
+    const THEME_STORAGE_KEY = "token-xiaohao-theme";
     const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const syncSystemTheme = (event) => {
-      document.documentElement.classList.toggle("dark", event.matches);
-    };
-    syncSystemTheme(darkModeQuery);
-    darkModeQuery.addEventListener("change", syncSystemTheme);
+    let themePreference = localStorage.getItem(THEME_STORAGE_KEY) || "system";
+
+    function applyTheme(preference = themePreference) {
+      const useDark = preference === "dark" || (preference === "system" && darkModeQuery.matches);
+      document.documentElement.classList.toggle("dark", useDark);
+      themePreference = preference;
+      if (preference === "system") localStorage.removeItem(THEME_STORAGE_KEY);
+      else localStorage.setItem(THEME_STORAGE_KEY, preference);
+      const toggle = document.getElementById("themeToggle");
+      if (toggle) {
+        toggle.setAttribute("aria-label", useDark ? "切换到浅色模式" : "切换到深色模式");
+        toggle.setAttribute("title", useDark ? "切换到浅色模式" : "切换到深色模式");
+      }
+    }
+
+    darkModeQuery.addEventListener("change", () => {
+      if (themePreference === "system") applyTheme("system");
+    });
+
+    applyTheme(themePreference);
   </script>
   <header class="topbar">
     <div class="header-inner">
@@ -1337,6 +1387,10 @@
         <h1>Token 在线消耗器</h1>
       </div>
       <div class="top-actions">
+        <button class="home theme-toggle" id="themeToggle" type="button" aria-label="切换到深色模式" title="切换到深色模式">
+          <svg class="moon-icon" viewBox="0 0 24 24" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg>
+          <svg class="sun-icon" viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"></path></svg>
+        </button>
         <details class="about-panel">
           <summary class="home">关于</summary>
           <div class="about-popover">
@@ -2057,6 +2111,12 @@
 
     providerButtons.forEach((button) => {
       button.addEventListener("click", () => setProvider(button.dataset.provider));
+    });
+
+    applyTheme(themePreference);
+
+    $("themeToggle").addEventListener("click", () => {
+      applyTheme(document.documentElement.classList.contains("dark") ? "light" : "dark");
     });
 
     function closeAdvancedPanel() {
