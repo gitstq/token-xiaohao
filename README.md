@@ -178,5 +178,3 @@ token-xiaohao/
 ## 🧭 设计取向
 
 Token 在线消耗器把复杂参数收纳在轻量设置区，把高频操作集中在一个主按钮上，把实时状态压缩为三张指标卡和一条 ECharts 曲线。它不是复杂后台，而是一个即开即用、干净利落的 Token 消耗面板。
-
-UI 对齐 [ljxi/NetworkPanel](https://github.com/ljxi/NetworkPanel) 的网络面板式单屏体验：白色顶部栏、浅蓝背景、居中主卡片、三项指标卡、中央圆形启动按钮与底部信息卡。
