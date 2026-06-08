@@ -32,6 +32,8 @@
     }
 
     body {
+      height: 100dvh;
+      overflow: hidden;
       min-width: 320px;
       margin: 0;
       color: var(--text);
@@ -70,7 +72,7 @@
 
     .topbar {
       display: flex;
-      min-height: 66px;
+      height: 66px;
       align-items: center;
       justify-content: space-between;
       gap: 18px;
@@ -132,25 +134,28 @@
 
     .page {
       display: grid;
-      min-height: calc(100vh - 66px);
-      align-content: start;
-      gap: 18px;
-      padding: 20px;
+      height: calc(100dvh - 66px);
+      grid-template-rows: minmax(0, 1fr);
+      align-items: center;
+      padding: clamp(10px, 2.2vh, 20px);
+      overflow: hidden;
     }
 
     .console {
       width: min(850px, 100%);
+      max-height: 100%;
       margin: 0 auto;
-      padding: clamp(20px, 4vw, 34px);
+      padding: clamp(16px, 2.8vh, 28px);
       border: 1px solid rgba(255, 255, 255, 0.84);
       border-radius: 18px;
       background: var(--surface);
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     .settings {
       display: grid;
-      gap: 18px;
+      gap: clamp(10px, 1.7vh, 16px);
     }
 
     .line {
@@ -305,12 +310,12 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
-      margin-top: 10px;
+      margin-top: clamp(8px, 1.5vh, 14px);
     }
 
     .metric {
-      min-height: 110px;
-      padding: 20px 22px;
+      min-height: 92px;
+      padding: clamp(12px, 2vh, 18px) 18px;
       border: 1px solid var(--line-strong);
       border-radius: 0;
       background: rgba(255, 255, 255, 0.44);
@@ -322,13 +327,13 @@
       justify-content: space-between;
       gap: 12px;
       color: #23365d;
-      font-size: 19px;
+      font-size: clamp(15px, 1.9vw, 18px);
     }
 
     .metric-icon {
       position: relative;
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       flex: 0 0 auto;
       color: #5f6470;
     }
@@ -372,9 +377,9 @@
     }
 
     .metric-value {
-      margin-top: 18px;
+      margin-top: 12px;
       color: #59616f;
-      font-size: 27px;
+      font-size: clamp(20px, 2.6vw, 25px);
       font-weight: 820;
       letter-spacing: 0;
     }
@@ -387,7 +392,7 @@
 
     .meter {
       height: 4px;
-      margin-top: 13px;
+      margin-top: 9px;
       overflow: hidden;
       border-radius: 999px;
       background: #e7ecf4;
@@ -405,15 +410,15 @@
     .action-zone {
       display: grid;
       justify-items: center;
-      gap: 18px;
-      padding: 28px 0 6px;
+      gap: 10px;
+      padding: clamp(14px, 2.6vh, 24px) 0 0;
     }
 
     .main-action {
       position: relative;
       display: grid;
-      width: 146px;
-      height: 146px;
+      width: clamp(96px, 15vh, 132px);
+      height: clamp(96px, 15vh, 132px);
       place-items: center;
       border-radius: 50%;
       background: linear-gradient(135deg, #6267f5, #566ff3);
@@ -431,9 +436,9 @@
       width: 0;
       height: 0;
       margin-left: 8px;
-      border-top: 22px solid transparent;
-      border-bottom: 22px solid transparent;
-      border-left: 32px solid currentColor;
+      border-top: clamp(16px, 2.5vh, 21px) solid transparent;
+      border-bottom: clamp(16px, 2.5vh, 21px) solid transparent;
+      border-left: clamp(24px, 3.6vh, 31px) solid currentColor;
     }
 
     .main-action .stop {
@@ -465,9 +470,9 @@
 
     .sparkline-panel {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
-      margin-top: 10px;
+      margin-top: clamp(6px, 1vh, 10px);
     }
 
     .sparkline-head {
@@ -481,7 +486,7 @@
     canvas {
       display: block;
       width: 100%;
-      height: 88px;
+      height: clamp(54px, 9vh, 82px);
       border-radius: 7px;
       background:
         linear-gradient(rgba(71, 92, 126, 0.08) 1px, transparent 1px),
@@ -495,7 +500,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: clamp(8px, 1.2vh, 12px);
     }
 
     .tiny-btn,
@@ -522,8 +527,8 @@
     }
 
     details {
-      display: grid;
-      gap: 12px;
+      display: inline-grid;
+      justify-items: center;
     }
 
     details[open] summary {
@@ -533,12 +538,27 @@
 
     .advanced {
       display: grid;
-      gap: 12px;
-      margin-top: 12px;
-      padding: 14px;
+      gap: 10px;
+      position: fixed;
+      left: 50%;
+      bottom: clamp(12px, 3vh, 28px);
+      z-index: 20;
+      width: min(760px, calc(100vw - 24px));
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(248, 251, 255, 0.78);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 22px 70px rgba(38, 62, 100, 0.22);
+      transform: translateX(-50%);
+    }
+
+    details[open]::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 19;
+      background: rgba(238, 247, 255, 0.62);
+      backdrop-filter: blur(2px);
     }
 
     .advanced-grid {
@@ -556,30 +576,29 @@
     }
 
     .notice {
-      margin-top: 12px;
+      margin-top: 10px;
       color: #7b6b3b;
       font-size: 12px;
       line-height: 1.55;
     }
 
     .status-strip {
-      width: min(850px, 100%);
-      margin: 0 auto;
-      padding: 18px 24px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.76);
+      margin-top: clamp(8px, 1.3vh, 12px);
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(248, 251, 255, 0.72);
       color: #23365d;
-      box-shadow: 0 14px 42px rgba(60, 88, 120, 0.1);
     }
 
     .event-list {
       display: grid;
-      gap: 8px;
-      min-height: 50px;
-      justify-content: center;
+      gap: 4px;
+      min-height: 28px;
+      justify-content: start;
       text-align: left;
       color: #314260;
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .event {
@@ -590,7 +609,7 @@
     }
 
     .event-badge {
-      min-width: 62px;
+      min-width: 52px;
       border: 1px solid #caedbd;
       border-radius: 4px;
       background: #f3ffe9;
@@ -608,7 +627,7 @@
     }
 
     .footer {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       justify-content: center;
       gap: 12px;
@@ -616,48 +635,153 @@
       font-size: 13px;
     }
 
-    @media (max-width: 760px) {
+      @media (max-width: 760px) {
       .topbar {
+        height: 58px;
         padding: 0 12px;
       }
 
       .brand {
-        font-size: 19px;
+        font-size: 18px;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
       }
 
       .page {
-        padding: 14px;
+        height: calc(100dvh - 58px);
+        padding: 10px;
       }
 
       .console {
-        padding: 18px;
+        padding: 12px;
         border-radius: 14px;
       }
 
       .line,
-      .split,
       .range-wrap,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
       .advanced-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
       }
 
-      .metric-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+      .advanced {
+        bottom: 10px;
+        padding: 10px;
       }
 
-      .metric {
-        min-height: 96px;
-        padding: 16px;
+      .mini-field {
+        gap: 3px;
+        font-size: 11px;
       }
 
-      .main-action {
-        width: 118px;
-        height: 118px;
+      .line {
+        gap: 5px;
+      }
+
+      .label {
+        font-size: 12px;
+      }
+
+      .settings {
+        gap: 8px;
+      }
+
+      .input,
+      .select {
+        min-height: 30px;
+        font-size: 12px;
       }
 
       .provider-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .segment {
+        min-height: 30px;
+        font-size: 12px;
+      }
+
+      .switches {
+        gap: 8px;
+      }
+
+      .switch-label {
+        font-size: 12px;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .metric {
+        min-height: 74px;
+        padding: 8px;
+      }
+
+      .metric-top {
+        display: block;
+        font-size: 12px;
+      }
+
+      .metric-icon {
+        display: none;
+      }
+
+      .metric-value {
+        margin-top: 7px;
+        font-size: 17px;
+      }
+
+      .metric-note {
+        font-size: 10px;
+      }
+
+      .meter {
+        margin-top: 6px;
+      }
+
+      .main-action {
+        width: clamp(74px, 13vh, 98px);
+        height: clamp(74px, 13vh, 98px);
+      }
+
+      .action-zone {
+        padding-top: 10px;
+      }
+
+      canvas {
+        height: clamp(42px, 7vh, 58px);
+      }
+
+      .compact-actions {
+        margin-top: 8px;
+      }
+
+      .tiny-btn,
+      summary {
+        min-height: 28px;
+        font-size: 12px;
+      }
+
+      .status-strip {
+        padding: 8px;
+      }
+
+      .event-list {
+        font-size: 11px;
+      }
+
+      .footer {
+        display: none;
       }
     }
   </style>
@@ -807,12 +931,12 @@
         </details>
         <button class="tiny-btn" id="resetBtn" type="button">重置</button>
       </div>
-    </section>
 
-    <section class="status-strip" aria-label="最近状态">
-      <div class="event-list" id="eventList">
-        <div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>
-      </div>
+      <section class="status-strip" aria-label="最近状态">
+        <div class="event-list" id="eventList">
+          <div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>
+        </div>
+      </section>
     </section>
 
     <footer class="footer">
