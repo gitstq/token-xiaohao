@@ -295,6 +295,12 @@
 
     .model-row {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 7px;
+    }
+
+    .url-row {
+      display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 7px;
     }
@@ -1060,7 +1066,10 @@
               <svg viewBox="0 0 24 24" focusable="false"><path d="m4 16.2 10.7-10.7 3.8 3.8L7.8 20H4v-3.8Zm2 1.9h1l8.7-8.8-.9-.9L6 17.1v1ZM16.1 4.1a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8l-.6.6-3.8-3.8.6-.6Z"></path></svg>
             </button>
           </div>
-          <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
+          <span class="url-row">
+            <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
+            <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
+          </span>
         </div>
 
         <div class="split token-split">
@@ -1072,7 +1081,6 @@
               <select class="select" id="modelName">
                 <option value="">请先获取模型</option>
               </select>
-              <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
             </span>
           </label>
         </div>
