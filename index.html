@@ -324,9 +324,54 @@
     }
 
     input[type="range"] {
+      --slider-percent: 10.5%;
+      -webkit-appearance: none;
+      appearance: none;
       width: 100%;
       height: 18px;
-      accent-color: var(--primary-soft);
+      margin: 0;
+      border: 0;
+      border-radius: 999px;
+      outline: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary-soft) 0 var(--slider-percent), #e4e7ed var(--slider-percent) 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      margin-top: -7px;
+      border: 2px solid var(--primary-soft);
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: #e4e7ed;
+    }
+
+    input[type="range"]::-moz-range-progress {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--primary-soft);
+      border-radius: 50%;
+      background: #ffffff;
     }
 
     .visually-hidden {
@@ -1582,6 +1627,16 @@
       $("requestBar").style.width = `${Math.min(100, state.completed / target * 100)}%`;
       $("activeWorkers").textContent = `并发 ${state.activeWorkers}`;
       $("threadNumValue").textContent = String(settings.concurrency || 1);
+      syncConcurrencySlider();
+    }
+
+    function syncConcurrencySlider() {
+      const slider = $("concurrencyRange");
+      const min = Number(slider.min) || 0;
+      const max = Number(slider.max) || 100;
+      const value = Number(slider.value) || min;
+      const percent = max > min ? (value - min) / (max - min) * 100 : 0;
+      slider.style.setProperty("--slider-percent", `${Math.min(100, Math.max(0, percent))}%`);
     }
 
     function addEvent(badge, text, isError = false) {
@@ -1759,11 +1814,13 @@
 
     $("concurrencyRange").addEventListener("input", () => {
       $("concurrency").value = $("concurrencyRange").value;
+      syncConcurrencySlider();
       updateMetrics();
     });
     $("concurrency").addEventListener("input", () => {
       const value = Math.min(20, Math.max(1, Number($("concurrency").value) || 1));
       $("concurrencyRange").value = value;
+      syncConcurrencySlider();
       updateMetrics();
     });
     ["rounds", "tokenBudget", "maxTokens"].forEach((id) => {
