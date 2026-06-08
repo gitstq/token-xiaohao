@@ -1484,15 +1484,12 @@
 
     const defaults = {
       openai: {
-        url: "https://api.openai.com/v1",
         model: ""
       },
       claude: {
-        url: "https://api.anthropic.com/v1",
         model: ""
       },
       custom: {
-        url: "https://example.com/v1",
         model: ""
       }
     };
@@ -1536,7 +1533,6 @@
       providerButtons.forEach((button) => {
         button.classList.toggle("active", button.dataset.provider === provider);
       });
-      $("baseUrl").value = defaults[provider].url;
       $("modelName").value = defaults[provider].model;
       syncModelSelect();
       addEvent("Mode", `接口已切换为 ${provider === "openai" ? "GPT" : provider === "claude" ? "Claude / CC" : "自定义"}`);
