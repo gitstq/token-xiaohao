@@ -768,6 +768,37 @@
       transform: translate(-50%, -50%);
     }
 
+    .advanced-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background: transparent;
+      color: #909399;
+      transition: border-color .18s ease, background-color .18s ease, color .18s ease;
+    }
+
+    .advanced-close:hover {
+      border-color: #c6e2ff;
+      background: #ecf5ff;
+      color: var(--primary-soft);
+    }
+
+    .advanced-close svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
     .advanced-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1308,6 +1339,9 @@
               <svg viewBox="0 0 24 24" focusable="false"><path d="M4 7h10a2 2 0 1 0 0-2H4v2Zm16-2h-2v2h2V5ZM4 13h2v-2H4v2Zm6 0h10v-2H10a2 2 0 1 0 0 2ZM4 19h10a2 2 0 1 0 0-2H4v2Zm16-2h-2v2h2v-2Z"></path></svg>
             </summary>
             <div class="advanced">
+              <button class="advanced-close" id="closeSettingsIconBtn" type="button" aria-label="关闭参数设置" title="关闭">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M6 6 18 18M18 6 6 18"></path></svg>
+              </button>
               <div class="advanced-grid">
                 <label class="mini-field provider-field">接口类型
                   <span class="provider-row" role="tablist" aria-label="接口类型">
@@ -1910,10 +1944,15 @@
       button.addEventListener("click", () => setProvider(button.dataset.provider));
     });
 
+    function closeAdvancedPanel() {
+      $("advancedPanel").open = false;
+    }
+
     $("mainAction").addEventListener("click", startRun);
     $("resetBtn").addEventListener("click", resetStats);
     $("fetchModelsBtn").addEventListener("click", fetchModels);
-    $("closeSettingsBtn").addEventListener("click", () => { $("advancedPanel").open = false; });
+    $("closeSettingsBtn").addEventListener("click", closeAdvancedPanel);
+    $("closeSettingsIconBtn").addEventListener("click", closeAdvancedPanel);
     $("modelSelectTrigger").addEventListener("click", () => {
       if ($("modelSelectTrigger").disabled) return;
       const widget = $("modelSelectWidget");
