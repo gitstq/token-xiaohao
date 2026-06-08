@@ -340,7 +340,14 @@
 
     .settings {
       display: grid;
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .home-provider {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
     }
 
     .title-row {
@@ -914,7 +921,6 @@
       gap: 10px;
     }
 
-    .provider-field,
     .prompt-field {
       grid-column: span 2;
     }
@@ -933,6 +939,9 @@
       color: var(--field-text);
       font-size: 13px;
       font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       transition: border-color .18s ease, color .18s ease;
     }
 
@@ -1095,7 +1104,8 @@
 
       .input,
       .select,
-      .tiny-btn {
+      .tiny-btn,
+      .segment {
         min-height: 29px;
         font-size: 12px;
       }
@@ -1182,7 +1192,6 @@
         gap: 7px;
       }
 
-      .provider-field,
       .prompt-field {
         grid-column: span 2;
       }
@@ -1214,7 +1223,7 @@
       }
 
       .settings {
-        gap: 5px;
+        gap: 4px;
       }
 
       .split {
@@ -1223,7 +1232,8 @@
 
       .input,
       .select,
-      .tiny-btn {
+      .tiny-btn,
+      .segment {
         min-height: 26px;
       }
 
@@ -1297,6 +1307,15 @@
   <main class="page">
     <section class="console" aria-label="Token 消耗面板">
       <form class="settings" id="configForm">
+        <div class="home-provider">
+          <span class="font-background">接口类型：</span>
+          <span class="provider-row" role="tablist" aria-label="接口类型">
+            <button class="segment active" type="button" data-provider="openai">GPT</button>
+            <button class="segment" type="button" data-provider="claude">Claude / CC</button>
+            <button class="segment" type="button" data-provider="custom">自定义</button>
+          </span>
+        </div>
+
         <div class="address-block">
           <div class="title-row">
             <span class="font-background">接口地址：</span>
@@ -1410,13 +1429,6 @@
                 <svg viewBox="0 0 24 24" focusable="false"><path d="M6 6 18 18M18 6 6 18"></path></svg>
               </button>
               <div class="advanced-grid">
-                <label class="mini-field provider-field">接口类型
-                  <span class="provider-row" role="tablist" aria-label="接口类型">
-                    <button class="segment active" type="button" data-provider="openai">GPT</button>
-                    <button class="segment" type="button" data-provider="claude">Claude / CC</button>
-                    <button class="segment" type="button" data-provider="custom">自定义</button>
-                  </span>
-                </label>
                 <label class="mini-field">轮次
                   <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
                 </label>
