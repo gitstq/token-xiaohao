@@ -523,6 +523,12 @@
 
     .url-row {
       display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 32%);
+      gap: 7px;
+    }
+
+    .key-row {
+      display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 7px;
     }
@@ -1132,6 +1138,11 @@
         gap: 7px;
       }
 
+      .url-row,
+      .key-row {
+        grid-template-columns: 1fr;
+      }
+
       .font-background,
       .mini-main,
       .switch-label {
@@ -1366,28 +1377,28 @@
           </div>
           <span class="url-row">
             <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
-            <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
+            <label class="mini-main">模型 ID：
+              <span class="model-row">
+                <select class="native-select" id="modelName" tabindex="-1" aria-hidden="true">
+                  <option value="">请先获取模型</option>
+                </select>
+                <span class="select-widget" id="modelSelectWidget">
+                  <button class="select-trigger" id="modelSelectTrigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                    <span class="select-value" id="modelSelectValue">请先获取模型</span>
+                  </button>
+                  <span class="select-menu" id="modelSelectMenu" role="listbox"></span>
+                </span>
+              </span>
+            </label>
           </span>
         </div>
 
-        <div class="split token-split">
+        <span class="key-row">
           <label class="mini-main">KEY：
             <input class="input" id="apiKey" type="password" placeholder="sk-... / 兼容接口密钥" autocomplete="off">
           </label>
-          <label class="mini-main">模型 ID：
-            <span class="model-row">
-              <select class="native-select" id="modelName" tabindex="-1" aria-hidden="true">
-                <option value="">请先获取模型</option>
-              </select>
-              <span class="select-widget" id="modelSelectWidget">
-                <button class="select-trigger" id="modelSelectTrigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value" id="modelSelectValue">请先获取模型</span>
-                </button>
-                <span class="select-menu" id="modelSelectMenu" role="listbox"></span>
-              </span>
-            </span>
-          </label>
-        </div>
+          <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
+        </span>
 
         <div class="thread-block">
           <span class="font-background">线程数：<span id="threadNumValue">3</span></span>
