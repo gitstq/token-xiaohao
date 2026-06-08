@@ -88,10 +88,10 @@
       max-width: min(520px, calc(100vw - 24px));
       gap: 3px;
       padding: 12px 16px;
-      border: 1px solid #fde2e2;
+      border: 1px solid #d9ecff;
       border-radius: 8px;
-      background: #fef0f0;
-      color: #e85347;
+      background: #ecf5ff;
+      color: var(--primary-soft);
       box-shadow: 0 14px 40px rgba(82, 100, 132, .18);
       opacity: 0;
       pointer-events: none;
@@ -102,6 +102,12 @@
     .top-notice.is-visible {
       opacity: 1;
       transform: translate(-50%, 0);
+    }
+
+    .top-notice.is-error {
+      border-color: #fde2e2;
+      background: #fef0f0;
+      color: #e85347;
     }
 
     .top-notice-title {
@@ -911,47 +917,6 @@
       color: var(--primary-soft);
     }
 
-    .event-list {
-      display: grid;
-      min-width: 0;
-      gap: 2px;
-      justify-content: start;
-      color: var(--text);
-      font-size: 12px;
-      text-align: left;
-    }
-
-    .event {
-      display: flex;
-      min-width: 0;
-      align-items: center;
-      gap: 8px;
-      line-height: 1.35;
-    }
-
-    .event span:last-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .event-badge {
-      min-width: 50px;
-      border: 1px solid #e1f3d8;
-      border-radius: 4px;
-      background: #f0f9eb;
-      color: var(--success);
-      padding: 2px 6px;
-      text-align: center;
-      font-size: 12px;
-    }
-
-    .event-badge.error {
-      border-color: #fde2e2;
-      background: #fef0f0;
-      color: var(--danger);
-    }
-
     .footer {
       display: flex;
       justify-content: center;
@@ -1127,15 +1092,6 @@
         min-height: 44px;
         max-height: 50px;
         gap: 6px;
-      }
-
-      .event-list {
-        font-size: 11px;
-      }
-
-      .event-badge {
-        min-width: 42px;
-        padding: 1px 4px;
       }
 
       .footer {
@@ -1400,9 +1356,6 @@
 
     <section class="status-strip info-card" aria-label="最近状态">
       <span class="status-pill" aria-live="polite"><span class="dot"></span><span id="runState">待机中</span></span>
-      <div class="event-list" id="eventList">
-        <div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>
-      </div>
     </section>
 
     <footer class="footer">
@@ -1446,7 +1399,6 @@
       lastLatency: 0,
       latencies: [],
       samples: [],
-      events: [],
       settings: {},
       noticeTimer: null
     };
@@ -1631,7 +1583,6 @@
       state.lastLatency = 0;
       state.latencies = [];
       state.samples = [];
-      state.events = [];
 
       document.body.classList.add("running");
       $("runState").textContent = "真实运行中";
@@ -1805,20 +1756,13 @@
     }
 
     function addEvent(badge, text, isError = false) {
-      state.events.unshift({ badge, text, isError });
-      state.events = state.events.slice(0, 3);
-      $("eventList").innerHTML = state.events.map((item) => `
-        <div class="event">
-          <span class="event-badge ${item.isError ? "error" : ""}">${escapeHtml(item.badge)}</span>
-          <span>${escapeHtml(item.text)}</span>
-        </div>
-      `).join("");
-      if (isError) showTopNotice(badge, text);
+      showTopNotice(badge, text, isError);
     }
 
-    function showTopNotice(badge, text) {
+    function showTopNotice(badge, text, isError = false) {
       $("topNoticeTitle").textContent = badge;
       $("topNoticeText").textContent = text;
+      $("topNotice").classList.toggle("is-error", isError);
       $("topNotice").classList.add("is-visible");
       $("topNotice").setAttribute("aria-hidden", "false");
       clearTimeout(state.noticeTimer);
@@ -1911,8 +1855,6 @@
       state.lastLatency = 0;
       state.latencies = [];
       state.samples = [];
-      state.events = [];
-      $("eventList").innerHTML = '<div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>';
       updateMetrics();
       drawChart();
     }
