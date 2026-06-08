@@ -9,44 +9,40 @@
     :root {
       color-scheme: light;
       --page: #eef7ff;
-      --surface: rgba(255, 255, 255, 0.92);
-      --surface-strong: #ffffff;
-      --line: #d9e2ef;
-      --line-strong: #c9d6e8;
-      --text: #15223a;
-      --muted: #6b7890;
-      --soft: #8a97aa;
-      --blue: #5b62f4;
-      --blue-dark: #4352d8;
-      --cyan: #08bfd8;
-      --green: #48b86f;
-      --red: #e35d6a;
-      --amber: #d99b2b;
-      --shadow: 0 28px 80px rgba(60, 88, 120, 0.16);
-      --radius: 8px;
-      font-family: Inter, "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+      --card: #ffffff;
+      --text: #344357;
+      --title: #526484;
+      --info: #909399;
+      --primary: #5668ee;
+      --primary-soft: #409eff;
+      --border: #dbdfea;
+      --control: #dcdfe6;
+      --danger: #e85347;
+      --success: #67c23a;
+      --radius-round: 20px;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
-      height: 100dvh;
-      overflow: hidden;
+      height: 100%;
+    }
+
+    body {
       min-width: 320px;
       margin: 0;
+      overflow: hidden;
       color: var(--text);
-      background:
-        radial-gradient(circle at 18% 10%, rgba(91, 98, 244, 0.15), transparent 24rem),
-        radial-gradient(circle at 84% 18%, rgba(8, 191, 216, 0.12), transparent 24rem),
-        linear-gradient(180deg, #f9fcff 0 66px, var(--page) 66px 100%);
+      background: var(--page);
     }
 
     button,
     input,
-    select,
-    textarea {
+    select {
       font: inherit;
     }
 
@@ -57,46 +53,55 @@
 
     button:disabled,
     input:disabled,
-    select:disabled,
-    textarea:disabled {
+    select:disabled {
       cursor: not-allowed;
-      opacity: 0.62;
+      opacity: .62;
     }
 
     h1,
     h2,
-    h3,
     p {
       margin: 0;
     }
 
-    .topbar {
-      display: flex;
-      height: 66px;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 0 20px;
-      border-bottom: 1px solid rgba(217, 226, 239, 0.74);
-      background: rgba(255, 255, 255, 0.82);
-      backdrop-filter: blur(16px);
+    a {
+      color: var(--info);
+      text-decoration: none;
     }
 
-    .top-actions {
+    a:hover {
+      color: var(--primary-soft);
+    }
+
+    .topbar {
+      height: 67px;
+      background-color: #ffffff;
+    }
+
+    .header-inner {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      width: 100%;
+      height: 100%;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 15px 20px 12px;
     }
 
     .brand {
       display: flex;
       min-width: 0;
       align-items: center;
-      gap: 10px;
-      color: #314369;
-      font-size: 22px;
-      font-weight: 850;
-      letter-spacing: 0;
+      gap: 8px;
+    }
+
+    .brand h1 {
+      overflow: hidden;
+      color: var(--title);
+      font-size: 20px;
+      font-weight: bolder;
+      line-height: 40px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .brand-mark {
@@ -105,160 +110,129 @@
       height: 40px;
       flex: 0 0 auto;
       place-items: center;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #6267f5, #5f8af8);
-      color: #fff;
-      box-shadow: 0 12px 26px rgba(91, 98, 244, 0.24);
-      font-weight: 900;
+      border-radius: 20%;
+      background-color: var(--primary);
     }
 
-    .status {
-      display: inline-flex;
+    .brand-mark svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .top-actions {
+      position: relative;
+      margin-top: 5px;
+    }
+
+    .home {
       min-height: 32px;
-      align-items: center;
-      gap: 8px;
-      padding: 0 13px;
-      border: 1px solid var(--line);
+      padding: 0 15px;
+      border: 1px solid var(--control);
       border-radius: 999px;
-      background: #fff;
-      color: #4e5d78;
+      background: #ffffff;
+      color: var(--title);
+      font-size: 12px;
+      line-height: 30px;
+      list-style: none;
+    }
+
+    .home::-webkit-details-marker,
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .about-panel {
+      position: relative;
+      z-index: 31;
+    }
+
+    .about-popover {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      width: min(320px, calc(100vw - 24px));
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 18px 50px rgba(82, 100, 132, .18);
+      color: var(--text);
       font-size: 14px;
-      white-space: nowrap;
+      line-height: 1.7;
     }
 
-    .repo-link {
-      display: inline-flex;
-      min-height: 32px;
-      align-items: center;
-      gap: 6px;
-      padding: 0 13px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #fff;
-      color: #4352d8;
-      font-size: 14px;
-      font-weight: 720;
-      text-decoration: none;
-      white-space: nowrap;
+    .about-popover h2 {
+      margin-bottom: 6px;
+      color: var(--title);
+      font-size: 20px;
     }
 
-    .repo-link::before {
-      content: "";
-      width: 13px;
-      height: 13px;
-      border: 2px solid currentColor;
-      border-radius: 50%;
-      box-shadow: inset 0 -4px 0 -2px currentColor;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--soft);
-    }
-
-    body.running .dot {
-      background: var(--green);
-      box-shadow: 0 0 0 6px rgba(72, 184, 111, 0.12);
+    .about-popover a {
+      color: var(--primary-soft);
     }
 
     .page {
       display: grid;
-      height: calc(100dvh - 66px);
-      grid-template-rows: minmax(0, 1fr);
-      align-items: center;
-      padding: clamp(10px, 2.2vh, 20px);
+      height: calc(100dvh - 67px);
+      grid-template-rows: auto auto auto;
+      align-content: start;
+      gap: 8px;
       overflow: hidden;
+      padding: 20px 10px 10px;
     }
 
-    .console {
+    .console,
+    .info-card {
       width: min(850px, 100%);
-      max-height: 100%;
+      height: fit-content;
       margin: 0 auto;
-      padding: clamp(16px, 2.8vh, 28px);
-      border: 1px solid rgba(255, 255, 255, 0.84);
-      border-radius: 18px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      border-radius: var(--radius-round);
+      background-color: var(--card);
+      padding: 26px 34px 18px;
     }
 
     .settings {
       display: grid;
-      gap: clamp(10px, 1.7vh, 16px);
+      gap: 10px;
     }
 
-    .line {
-      display: grid;
-      grid-template-columns: 100px minmax(0, 1fr);
-      gap: 14px;
+    .title-row {
+      display: flex;
+      min-height: 22px;
       align-items: center;
+      gap: 2px;
+      margin-bottom: 3px;
     }
 
-    .label {
+    .font-background {
       color: var(--text);
       font-size: 14px;
-      font-weight: 720;
-    }
-
-    .field-stack {
-      display: grid;
-      gap: 8px;
     }
 
     .input,
-    .textarea,
     .select {
       width: 100%;
-      min-height: 34px;
-      border: 1px solid var(--line-strong);
-      border-radius: 5px;
+      min-height: 32px;
+      border: 1px solid var(--control);
+      border-radius: 4px;
       outline: 0;
-      background: rgba(255, 255, 255, 0.82);
-      color: var(--text);
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      background-color: #ffffff;
+      color: #606266;
+      transition: border-color .18s ease, box-shadow .18s ease;
     }
 
-    .input,
+    .input {
+      padding: 0 11px;
+    }
+
     .select {
-      padding: 0 10px;
-    }
-
-    .textarea {
-      min-height: 76px;
-      resize: vertical;
-      padding: 10px;
-      line-height: 1.52;
+      padding: 0 8px;
     }
 
     .input:focus,
-    .select:focus,
-    .textarea:focus {
-      border-color: #5f8af8;
-      box-shadow: 0 0 0 3px rgba(95, 138, 248, 0.15);
-    }
-
-    .provider-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .segment {
-      min-height: 34px;
-      border: 1px solid var(--line-strong);
-      border-radius: 5px;
-      background: #fff;
-      color: #506078;
-      font-weight: 760;
-      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-    }
-
-    .segment.active {
-      border-color: #5f8af8;
-      background: #edf4ff;
-      color: var(--blue-dark);
+    .select:focus {
+      border-color: var(--primary-soft);
+      box-shadow: 0 0 0 2px rgba(64, 158, 255, .12);
     }
 
     .split {
@@ -267,18 +241,72 @@
       gap: 10px;
     }
 
+    .mini-main,
+    .mini-field {
+      display: grid;
+      gap: 5px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .mini-field {
+      color: #606266;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .model-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 7px;
+    }
+
+    .tiny-btn {
+      min-height: 32px;
+      padding: 0 12px;
+      border: 1px solid var(--control);
+      border-radius: 4px;
+      background: #ffffff;
+      color: #409eff;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .thread-block {
+      display: grid;
+      gap: 7px;
+      margin-top: 2px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 18px;
+      accent-color: var(--primary-soft);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
     .switches {
       display: flex;
-      flex-wrap: wrap;
+      height: 32px;
+      align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      color: #2d3e5f;
+      gap: 12px;
     }
 
     .switch-label {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
+      color: var(--text);
       font-size: 14px;
       white-space: nowrap;
     }
@@ -286,7 +314,7 @@
     .switch {
       position: relative;
       width: 40px;
-      height: 22px;
+      height: 20px;
       flex: 0 0 auto;
     }
 
@@ -300,189 +328,171 @@
       position: absolute;
       inset: 0;
       border-radius: 999px;
-      background: #dde3ee;
-      transition: background 0.18s ease;
+      background: #dcdfe6;
+      transition: background .18s ease;
     }
 
     .track::after {
       content: "";
       position: absolute;
-      top: 3px;
-      left: 3px;
+      top: 2px;
+      left: 2px;
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(25, 42, 74, 0.14);
-      transition: transform 0.18s ease;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .18);
+      transition: transform .18s ease;
     }
 
     .switch input:checked + .track {
-      background: #5f8af8;
+      background: var(--primary-soft);
     }
 
     .switch input:checked + .track::after {
-      transform: translateX(18px);
+      transform: translateX(20px);
     }
 
-    .range-wrap {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 64px;
-      gap: 12px;
-      align-items: center;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: #4096ff;
-    }
-
-    .metric-grid {
+    .ItemContainer {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: clamp(8px, 1.5vh, 14px);
+      margin-top: 10px;
     }
 
-    .metric {
-      min-height: 92px;
-      padding: clamp(12px, 2vh, 18px) 18px;
-      border: 1px solid var(--line-strong);
-      border-radius: 0;
-      background: rgba(255, 255, 255, 0.44);
+    .showItem {
+      min-height: 104px;
+      padding: 18px 15px 13px 24px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .showItem + .showItem {
+      border-left: 0;
     }
 
     .metric-top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      color: #23365d;
-      font-size: clamp(15px, 1.9vw, 18px);
+      gap: 8px;
+      color: var(--text);
+      font-size: 17px;
     }
 
-    .metric-icon {
-      position: relative;
-      width: 30px;
-      height: 30px;
-      flex: 0 0 auto;
-      color: #5f6470;
+    .state-icon {
+      display: block;
+      width: 40px;
+      height: 24px;
+      color: rgb(96, 98, 102);
     }
 
-    .metric-icon.flow::before,
-    .metric-icon.speed::before,
-    .metric-icon.state::before {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      border: 3px solid currentColor;
+    .state-icon svg {
+      width: 100%;
+      height: 100%;
     }
 
-    .metric-icon.flow::before {
-      border-radius: 11px;
-      border-top-color: transparent;
+    .state-icon-main {
+      color: rgb(9, 194, 222);
     }
 
-    .metric-icon.speed::before {
-      border-radius: 50%;
-      border-left-color: transparent;
-    }
-
-    .metric-icon.speed::after {
-      content: "";
-      position: absolute;
-      left: 17px;
-      top: 17px;
-      width: 12px;
-      height: 3px;
-      border-radius: 999px;
-      background: currentColor;
-      transform: rotate(-38deg);
-      transform-origin: left center;
-    }
-
-    .metric-icon.state::before {
-      inset: 7px 12px;
-      border-radius: 4px;
-      transform: skewX(-12deg);
-    }
-
-    .metric-value {
-      margin-top: 12px;
-      color: #59616f;
-      font-size: clamp(20px, 2.6vw, 25px);
-      font-weight: 820;
-      letter-spacing: 0;
+    .font-data {
+      margin-top: 4px;
+      overflow: hidden;
+      color: #606266;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 2.2rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .metric-note {
-      margin-top: 5px;
-      color: var(--soft);
+      overflow: hidden;
+      color: var(--info);
       font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .meter {
-      height: 4px;
-      margin-top: 9px;
+      height: 3px;
+      margin-top: 7px;
       overflow: hidden;
       border-radius: 999px;
-      background: #e7ecf4;
+      background: #eef2f8;
     }
 
     .meter span {
       display: block;
       width: 0%;
       height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #4096ff, #11c7d8);
-      transition: width 0.22s ease;
+      background: var(--primary-soft);
+      transition: width .22s ease;
     }
 
     .action-zone {
       display: grid;
       justify-items: center;
-      gap: 10px;
-      padding: clamp(14px, 2.6vh, 24px) 0 0;
+      padding-top: 12px;
     }
 
     .main-action {
       position: relative;
       display: grid;
-      width: clamp(96px, 15vh, 132px);
-      height: clamp(96px, 15vh, 132px);
+      width: 124px;
+      height: 124px;
       place-items: center;
       border-radius: 50%;
-      background: linear-gradient(135deg, #6267f5, #566ff3);
-      box-shadow: 0 18px 34px rgba(86, 111, 243, 0.36);
-      color: #fff;
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      background-color: #485bed;
+      background-image: linear-gradient(145deg, #485bed, #6576ff);
+      color: #ffffff;
+      box-shadow: 0 3px 8px #485bed, inset 0 2px 3px #6576ff;
+      transition: transform .18s ease;
     }
 
     .main-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 24px 44px rgba(86, 111, 243, 0.42);
+      transform: translateY(-1px);
     }
 
     .main-action .play {
       width: 0;
       height: 0;
-      margin-left: 8px;
-      border-top: clamp(16px, 2.5vh, 21px) solid transparent;
-      border-bottom: clamp(16px, 2.5vh, 21px) solid transparent;
-      border-left: clamp(24px, 3.6vh, 31px) solid currentColor;
+      margin-left: 9px;
+      border-top: 22px solid transparent;
+      border-bottom: 22px solid transparent;
+      border-left: 34px solid currentColor;
     }
 
     .main-action .stop {
+      position: relative;
       display: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 6px;
+      width: 52px;
+      height: 52px;
+    }
+
+    .main-action .stop::before,
+    .main-action .stop::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      width: 14px;
+      height: 44px;
+      border-radius: 4px;
       background: currentColor;
     }
 
+    .main-action .stop::before {
+      left: 8px;
+    }
+
+    .main-action .stop::after {
+      right: 8px;
+    }
+
     body.running .main-action {
-      background: linear-gradient(135deg, #e35d6a, #d94d7a);
-      box-shadow: 0 18px 34px rgba(227, 93, 106, 0.28);
+      background-color: var(--danger);
+      background-image: linear-gradient(145deg, #e85347, #f56c6c);
+      box-shadow: 0 3px 8px rgba(232, 83, 71, .75), inset 0 2px 3px rgba(255, 255, 255, .2);
     }
 
     body.running .main-action .play {
@@ -494,67 +504,42 @@
     }
 
     .action-text {
-      color: #53627a;
-      font-size: 14px;
-      font-weight: 720;
+      display: none;
     }
 
-    .sparkline-panel {
-      display: grid;
-      gap: 6px;
-      width: 100%;
-      margin-top: clamp(6px, 1vh, 10px);
-    }
-
-    .sparkline-head {
+    .panel-tools {
       display: flex;
+      height: 24px;
       align-items: center;
       justify-content: space-between;
-      color: var(--soft);
-      font-size: 12px;
+      margin-top: -16px;
     }
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: clamp(54px, 9vh, 82px);
-      border-radius: 7px;
-      background:
-        linear-gradient(rgba(71, 92, 126, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(71, 92, 126, 0.08) 1px, transparent 1px),
-        rgba(244, 248, 253, 0.7);
-      background-size: 100% 50%, 8.33% 100%;
-    }
-
-    .compact-actions {
+    .tool-left {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: clamp(8px, 1.2vh, 12px);
+      gap: 32px;
     }
 
-    .tiny-btn,
-    summary {
-      min-height: 30px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #fff;
-      color: #49607e;
-      padding: 0 12px;
-      font-size: 13px;
-      font-weight: 720;
-    }
-
-    summary {
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
+    .icon-link {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      padding: 0;
+      background: transparent;
+      color: var(--primary-soft);
       list-style: none;
     }
 
-    summary::-webkit-details-marker {
-      display: none;
+    .icon-link svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .tool-icon {
+      width: 26px;
+      height: 24px;
     }
 
     details {
@@ -563,24 +548,7 @@
     }
 
     details[open] summary {
-      border-color: #bcd1fb;
-      color: var(--blue-dark);
-    }
-
-    .advanced {
-      display: grid;
-      gap: 10px;
-      position: fixed;
-      left: 50%;
-      bottom: clamp(12px, 3vh, 28px);
-      z-index: 20;
-      width: min(760px, calc(100vw - 24px));
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.98);
-      box-shadow: 0 22px 70px rgba(38, 62, 100, 0.22);
-      transform: translateX(-50%);
+      color: var(--primary);
     }
 
     details[open]::before {
@@ -588,8 +556,24 @@
       position: fixed;
       inset: 0;
       z-index: 19;
-      background: rgba(238, 247, 255, 0.62);
+      background: rgba(238, 247, 255, .62);
       backdrop-filter: blur(2px);
+    }
+
+    .advanced {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      z-index: 20;
+      display: grid;
+      width: min(760px, calc(100vw - 24px));
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 22px 70px rgba(38, 62, 100, .22);
+      transform: translateX(-50%);
     }
 
     .advanced-grid {
@@ -598,29 +582,37 @@
       gap: 10px;
     }
 
-    .model-field {
+    .provider-field,
+    .prompt-field {
       grid-column: span 2;
     }
 
-    .model-row {
+    .provider-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 7px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
     }
 
-    .mini-field {
-      display: grid;
-      gap: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
+    .segment {
+      min-height: 32px;
+      border: 1px solid var(--control);
+      border-radius: 4px;
+      background: #ffffff;
+      color: #606266;
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color .18s ease, color .18s ease;
+    }
+
+    .segment.active {
+      border-color: var(--primary-soft);
+      color: var(--primary-soft);
     }
 
     .notice {
-      margin-top: 10px;
-      color: #7b6b3b;
+      color: #e6a23c;
       font-size: 12px;
-      line-height: 1.55;
+      line-height: 1.5;
     }
 
     .advanced-actions {
@@ -628,67 +620,135 @@
       justify-content: flex-end;
     }
 
-    .status-strip {
-      margin-top: clamp(8px, 1.3vh, 12px);
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: rgba(248, 251, 255, 0.72);
-      color: #23365d;
+    .sparkline-panel {
+      display: none;
+      gap: 6px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .sparkline-panel.is-visible {
+      display: grid;
+    }
+
+    .sparkline-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--info);
+      font-size: 12px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 64px;
+      border-radius: 8px;
+      background:
+        linear-gradient(rgba(82, 100, 132, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(82, 100, 132, .08) 1px, transparent 1px),
+        rgba(244, 248, 253, .8);
+      background-size: 100% 50%, 8.33% 100%;
+    }
+
+    .info-card {
+      display: flex;
+      min-height: 48px;
+      max-height: 58px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      min-width: 74px;
+      height: 24px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 4px;
+      background: #f0f9eb;
+      color: var(--success);
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    body.running .status-pill {
+      background: #ecf5ff;
+      color: var(--primary-soft);
     }
 
     .event-list {
       display: grid;
-      gap: 4px;
-      min-height: 28px;
+      min-width: 0;
+      gap: 2px;
       justify-content: start;
-      text-align: left;
-      color: #314260;
+      color: var(--text);
       font-size: 12px;
+      text-align: left;
     }
 
     .event {
       display: flex;
+      min-width: 0;
       align-items: center;
-      gap: 10px;
-      line-height: 1.45;
+      gap: 8px;
+      line-height: 1.35;
+    }
+
+    .event span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .event-badge {
-      min-width: 52px;
-      border: 1px solid #caedbd;
+      min-width: 50px;
+      border: 1px solid #e1f3d8;
       border-radius: 4px;
-      background: #f3ffe9;
-      color: #3bb55e;
-      padding: 2px 7px;
+      background: #f0f9eb;
+      color: var(--success);
+      padding: 2px 6px;
       text-align: center;
       font-size: 12px;
-      font-weight: 780;
     }
 
     .event-badge.error {
-      border-color: #ffd1d8;
-      background: #fff3f5;
-      color: var(--red);
+      border-color: #fde2e2;
+      background: #fef0f0;
+      color: var(--danger);
     }
 
     .footer {
-      display: none;
-      flex-wrap: wrap;
+      display: flex;
       justify-content: center;
-      gap: 12px;
-      color: #8a97aa;
+      gap: 10px;
+      color: var(--info);
       font-size: 13px;
     }
 
-      @media (max-width: 760px) {
+    @media (max-width: 760px) {
       .topbar {
         height: 58px;
-        padding: 0 12px;
       }
 
-      .brand {
+      .header-inner {
+        padding: 12px 12px 10px;
+      }
+
+      .brand h1 {
         font-size: 18px;
+        line-height: 34px;
       }
 
       .brand-mark {
@@ -696,96 +756,76 @@
         height: 34px;
       }
 
-      .top-actions {
-        gap: 6px;
+      .brand-mark svg {
+        width: 26px;
+        height: 26px;
       }
 
-      .repo-link,
-      .status {
+      .home {
         min-height: 30px;
-        padding: 0 9px;
-        font-size: 12px;
+        padding: 0 12px;
+        line-height: 28px;
       }
 
       .page {
         height: calc(100dvh - 58px);
+        gap: 6px;
+        padding: 20px 20px 8px;
+      }
+
+      .console,
+      .info-card {
         padding: 10px;
-      }
-
-      .console {
-        padding: 12px;
-        border-radius: 14px;
-      }
-
-      .line,
-      .range-wrap,
-      .split {
-        grid-template-columns: 1fr;
-      }
-
-      .advanced-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 7px;
-      }
-
-      .model-field {
-        grid-column: span 2;
-      }
-
-      .advanced {
-        bottom: 10px;
-        padding: 10px;
-      }
-
-      .mini-field {
-        gap: 3px;
-        font-size: 11px;
-      }
-
-      .line {
-        gap: 5px;
-      }
-
-      .label {
-        font-size: 12px;
+        border-radius: 18px;
       }
 
       .settings {
-        gap: 8px;
+        gap: 7px;
       }
 
-      .input,
-      .select {
-        min-height: 30px;
-        font-size: 12px;
+      .split {
+        grid-template-columns: 1fr;
+        gap: 7px;
       }
 
-      .provider-row {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 6px;
-      }
-
-      .segment {
-        min-height: 30px;
-        font-size: 12px;
-      }
-
-      .switches {
-        gap: 8px;
-      }
-
+      .font-background,
+      .mini-main,
       .switch-label {
         font-size: 12px;
       }
 
-      .metric-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 6px;
+      .title-row {
+        margin-bottom: 1px;
       }
 
-      .metric {
-        min-height: 74px;
+      .input,
+      .select,
+      .tiny-btn {
+        min-height: 29px;
+        font-size: 12px;
+      }
+
+      .thread-block {
+        gap: 4px;
+      }
+
+      .switches {
+        height: 27px;
+      }
+
+      .ItemContainer {
+        grid-template-columns: 1fr;
+        margin-top: 7px;
+      }
+
+      .showItem {
+        min-height: 76px;
         padding: 8px;
+      }
+
+      .showItem + .showItem {
+        border-top: 0;
+        border-left: 1px solid var(--border);
       }
 
       .metric-top {
@@ -793,13 +833,14 @@
         font-size: 12px;
       }
 
-      .metric-icon {
+      .state-icon {
         display: none;
       }
 
-      .metric-value {
-        margin-top: 7px;
+      .font-data {
+        margin-top: 4px;
         font-size: 17px;
+        line-height: 1.5rem;
       }
 
       .metric-note {
@@ -807,41 +848,128 @@
       }
 
       .meter {
-        margin-top: 6px;
-      }
-
-      .main-action {
-        width: clamp(74px, 13vh, 98px);
-        height: clamp(74px, 13vh, 98px);
+        margin-top: 5px;
       }
 
       .action-zone {
-        padding-top: 10px;
+        padding-top: 9px;
+      }
+
+      .main-action {
+        width: clamp(78px, 12.5vh, 98px);
+        height: clamp(78px, 12.5vh, 98px);
+      }
+
+      .main-action .play {
+        border-top-width: 17px;
+        border-bottom-width: 17px;
+        border-left-width: 26px;
+      }
+
+      .main-action .stop {
+        width: 42px;
+        height: 42px;
+      }
+
+      .main-action .stop::before,
+      .main-action .stop::after {
+        top: 4px;
+        width: 11px;
+        height: 34px;
+      }
+
+      .panel-tools {
+        margin-top: -13px;
+      }
+
+      .advanced {
+        bottom: 8px;
+        padding: 10px;
+      }
+
+      .advanced-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .provider-field,
+      .prompt-field {
+        grid-column: span 2;
       }
 
       canvas {
-        height: clamp(42px, 7vh, 58px);
+        height: 48px;
       }
 
-      .compact-actions {
-        margin-top: 8px;
-      }
-
-      .tiny-btn,
-      summary {
-        min-height: 28px;
-        font-size: 12px;
-      }
-
-      .status-strip {
-        padding: 8px;
+      .info-card {
+        min-height: 44px;
+        max-height: 50px;
+        gap: 6px;
       }
 
       .event-list {
         font-size: 11px;
       }
 
+      .event-badge {
+        min-width: 42px;
+        padding: 1px 4px;
+      }
+
       .footer {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 390px), (max-height: 700px) {
+      .console,
+      .info-card {
+        padding: 6px;
+      }
+
+      .page {
+        gap: 4px;
+        padding: 6px;
+      }
+
+      .settings {
+        gap: 5px;
+      }
+
+      .split {
+        gap: 5px;
+      }
+
+      .input,
+      .select,
+      .tiny-btn {
+        min-height: 26px;
+      }
+
+      .switches {
+        height: 24px;
+      }
+
+      .font-data {
+        font-size: 16px;
+        line-height: 1.25rem;
+      }
+
+      .metric-note {
+        line-height: 1.15;
+      }
+
+      .main-action {
+        width: 70px;
+        height: 70px;
+      }
+
+      .showItem {
+        min-height: 62px;
+        padding: 6px;
+      }
+
+      .info-card {
         display: none;
       }
     }
@@ -849,15 +977,25 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true">T</div>
-      <h1>Token 面板</h1>
-    </div>
-    <div class="top-actions">
-      <a class="repo-link" href="https://github.com/gitstq/token-xiaohao" target="_blank" rel="noopener">GitHub</a>
-      <div class="status" aria-live="polite">
-        <span class="dot"></span>
-        <span id="runState">待机中</span>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 1024 1024" focusable="false">
+            <path d="M568.96 459.242667l144-189.205334A382.208 382.208 0 0 0 512 213.333333c-212.074667 0-384 171.925333-384 384a382.293333 382.293333 0 0 0 93.397333 251.008l-64.554666 55.808A467.584 467.584 0 0 1 42.666667 597.333333C42.666667 338.133333 252.8 128 512 128c93.098667 0 179.861333 27.093333 252.842667 73.856l75.882666-99.690667 67.541334 51.413334-273.28 359.04a149.333333 149.333333 0 1 1-66.048-53.376z m266.453333-69.056l54.357334-71.424A467.242667 467.242667 0 0 1 981.333333 597.333333c0 113.706667-40.64 221.226667-113.237333 305.728l-64.725333-55.616A382.272 382.272 0 0 0 896 597.333333c0-76.288-22.250667-147.370667-60.586667-207.146666zM512 661.333333a64 64 0 1 0 0-128 64 64 0 0 0 0 128z" fill="#ffffff"></path>
+          </svg>
+        </div>
+        <h1>Token 面板</h1>
+      </div>
+      <div class="top-actions">
+        <details class="about-panel">
+          <summary class="home">关于</summary>
+          <div class="about-popover">
+            <h2>Token 面板</h2>
+            <p>用于在线消耗闲置 AI Token，支持 GPT、Claude / CC 兼容接口。</p>
+            <p>开源地址：<a href="https://github.com/gitstq/token-xiaohao" target="_blank" rel="noopener">token-xiaohao</a></p>
+            <p>UI 参考：<a href="https://github.com/ljxi/NetworkPanel" target="_blank" rel="noopener">NetworkPanel</a></p>
+          </div>
+        </details>
       </div>
     </div>
   </header>
@@ -865,31 +1003,37 @@
   <main class="page">
     <section class="console" aria-label="Token 消耗面板">
       <form class="settings" id="configForm">
-        <div class="line">
-          <label class="label">接口类型：</label>
-          <div class="provider-row" role="tablist" aria-label="接口类型">
-            <button class="segment active" type="button" data-provider="openai">GPT</button>
-            <button class="segment" type="button" data-provider="claude">Claude / CC</button>
-            <button class="segment" type="button" data-provider="custom">自定义</button>
+        <div class="address-block">
+          <div class="title-row">
+            <span class="font-background">接口地址：</span>
+            <button class="icon-link" id="copyUrlBtn" type="button" aria-label="复制接口地址" title="复制接口地址">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M8 7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-1v-2h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1H8Zm-4 4a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6Zm3-1a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H7Z"></path></svg>
+            </button>
+            <button class="icon-link" id="settingsTrigger" type="button" aria-label="编辑参数" title="编辑参数">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="m4 16.2 10.7-10.7 3.8 3.8L7.8 20H4v-3.8Zm2 1.9h1l8.7-8.8-.9-.9L6 17.1v1ZM16.1 4.1a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8l-.6.6-3.8-3.8.6-.6Z"></path></svg>
+            </button>
           </div>
-        </div>
-
-        <div class="line">
-          <label class="label" for="baseUrl">URL：</label>
           <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1" autocomplete="off">
         </div>
 
-        <div class="line">
-          <label class="label" for="apiKey">KEY：</label>
-          <input class="input" id="apiKey" type="password" placeholder="sk-... / 兼容接口密钥" autocomplete="off">
+        <div class="split token-split">
+          <label class="mini-main">KEY：
+            <input class="input" id="apiKey" type="password" placeholder="sk-... / 兼容接口密钥" autocomplete="off">
+          </label>
+          <label class="mini-main">模型 ID：
+            <span class="model-row">
+              <select class="select" id="modelName">
+                <option value="">请先获取模型</option>
+              </select>
+              <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
+            </span>
+          </label>
         </div>
 
-        <div class="line">
-          <label class="label" for="concurrencyRange">线程数：</label>
-          <div class="range-wrap">
-            <input id="concurrencyRange" type="range" min="1" max="20" step="1" value="3">
-            <input class="input" id="concurrency" type="number" min="1" max="20" step="1" value="3">
-          </div>
+        <div class="thread-block">
+          <span class="font-background">线程数：<span id="threadNumValue">3</span></span>
+          <input id="concurrencyRange" type="range" min="1" max="20" step="1" value="3">
+          <input class="visually-hidden" id="concurrency" type="number" min="1" max="20" step="1" value="3">
         </div>
 
         <div class="switches">
@@ -900,36 +1044,49 @@
             </span>
             预算保护
           </label>
+          <label class="switch-label">
+            <span class="switch">
+              <input id="autoModels" type="checkbox">
+              <span class="track"></span>
+            </span>
+            自动获取模型
+          </label>
         </div>
       </form>
 
-      <div class="metric-grid" aria-label="实时数据监控">
-        <article class="metric">
+      <div class="metric-grid ItemContainer" aria-label="实时数据监控">
+        <article class="metric showItem">
           <div class="metric-top">
             <span>总 Token</span>
-            <span class="metric-icon flow" aria-hidden="true"></span>
+            <span class="state-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-10 5 5 0 0 0-9.8 2.1A4 4 0 0 0 3 15Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>
+            </span>
           </div>
-          <div class="metric-value" id="totalTokens">-</div>
+          <div class="metric-value font-data" id="totalTokens">-</div>
           <div class="metric-note" id="budgetText">预算 100,000</div>
           <div class="meter" aria-hidden="true"><span id="budgetBar"></span></div>
         </article>
 
-        <article class="metric">
+        <article class="metric showItem">
           <div class="metric-top">
             <span>平均速度</span>
-            <span class="metric-icon speed" aria-hidden="true"></span>
+            <span class="state-icon state-icon-main" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M16.47 8.92 14.05 11.34a.4.4 0 0 1-.56-.57l2.41-2.41a3 3 0 0 0-4.26-4.26L9.23 6.51a3.02 3.02 0 0 0 1 4.93.4.4 0 0 1-.3.74 3.8 3.8 0 0 1-1.27-.84 3.82 3.82 0 0 1 0-5.39l2.42-2.41a3.82 3.82 0 0 1 5.39 5.39ZM10.08 7.83a3.8 3.8 0 0 1 1.26.84 3.82 3.82 0 0 1 0 5.39L8.92 16.47a3.82 3.82 0 0 1-5.39-5.39l2.42-2.41a.4.4 0 0 1 .56.56l-2.41 2.42a3.01 3.01 0 0 0 4.26 4.26l2.41-2.42a3 3 0 0 0-1-4.92.4.4 0 0 1 .31-.74Z" fill="currentColor"></path></svg>
+            </span>
           </div>
-          <div class="metric-value" id="throughput">-</div>
+          <div class="metric-value font-data state-icon-main" id="throughput">-</div>
           <div class="metric-note">最近 10 秒</div>
           <div class="meter" aria-hidden="true"><span id="speedBar"></span></div>
         </article>
 
-        <article class="metric">
+        <article class="metric showItem">
           <div class="metric-top">
             <span>请求状态</span>
-            <span class="metric-icon state" aria-hidden="true"></span>
+            <span class="state-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M13 2 4 14h7l-1 8 10-13h-7l0-7Z" fill="currentColor"></path></svg>
+            </span>
           </div>
-          <div class="metric-value" id="requestState">-</div>
+          <div class="metric-value font-data" id="requestState">-</div>
           <div class="metric-note" id="latencyText">延迟 -</div>
           <div class="meter" aria-hidden="true"><span id="requestBar"></span></div>
         </article>
@@ -943,71 +1100,80 @@
         <div class="action-text" id="actionText">启动消耗</div>
       </div>
 
-      <div class="sparkline-panel">
+      <div class="panel-tools">
+        <div class="tool-left">
+          <details id="advancedPanel">
+            <summary class="icon-link tool-icon" aria-label="参数设置" title="参数设置">
+              <svg viewBox="0 0 24 24" focusable="false"><path d="M4 7h10a2 2 0 1 0 0-2H4v2Zm16-2h-2v2h2V5ZM4 13h2v-2H4v2Zm6 0h10v-2H10a2 2 0 1 0 0 2ZM4 19h10a2 2 0 1 0 0-2H4v2Zm16-2h-2v2h2v-2Z"></path></svg>
+            </summary>
+            <div class="advanced">
+              <div class="advanced-grid">
+                <label class="mini-field provider-field">接口类型
+                  <span class="provider-row" role="tablist" aria-label="接口类型">
+                    <button class="segment active" type="button" data-provider="openai">GPT</button>
+                    <button class="segment" type="button" data-provider="claude">Claude / CC</button>
+                    <button class="segment" type="button" data-provider="custom">自定义</button>
+                  </span>
+                </label>
+                <label class="mini-field">轮次
+                  <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
+                </label>
+                <label class="mini-field">Token 预算
+                  <input class="input" id="tokenBudget" type="number" min="100" max="10000000" step="100" value="100000">
+                </label>
+                <label class="mini-field">单次输出
+                  <input class="input" id="maxTokens" type="number" min="16" max="8192" step="16" value="1024">
+                </label>
+                <label class="mini-field">温度
+                  <input class="input" id="temperature" type="number" min="0" max="2" step="0.1" value="1">
+                </label>
+                <label class="mini-field">间隔 ms
+                  <input class="input" id="intervalMs" type="number" min="0" max="60000" step="100" value="400">
+                </label>
+                <label class="mini-field">方法
+                  <select class="select" id="method">
+                    <option value="POST">POST</option>
+                  </select>
+                </label>
+                <label class="mini-field prompt-field">提示词
+                  <input class="input" id="promptText" type="text" value="请生成一段结构化、细节丰富、约 800 字的技术分析，主题是大模型推理服务的性能监控、成本控制和容量规划。">
+                </label>
+              </div>
+              <p class="notice">真实模式会调用你填写的接口并产生用量。若供应商拦截浏览器跨域请求，请填写支持 CORS 的兼容转发 URL。</p>
+              <div class="advanced-actions">
+                <button class="tiny-btn" id="closeSettingsBtn" type="button">应用</button>
+              </div>
+            </div>
+          </details>
+          <button class="icon-link tool-icon" id="resetBtn" type="button" aria-label="重置" title="重置">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M12 5a7 7 0 1 1-6.32 4H3.5A9 9 0 1 0 12 3v2ZM4 4v5h5V7H6.8A7 7 0 0 1 12 5V3a9 9 0 0 0-6.7 3H4V4Z"></path></svg>
+          </button>
+        </div>
+        <button class="icon-link tool-icon" id="chartToggleBtn" type="button" aria-label="实时曲线" title="实时曲线">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M4 19V5h2v12h14v2H4Zm4-4 3.2-4.2 2.7 2.2L18 7l1.7 1.1-5.5 8-2.6-2.1-2 2.6L8 15Z"></path></svg>
+        </button>
+      </div>
+
+      <div class="sparkline-panel" id="chartPanel">
         <div class="sparkline-head">
           <span>实时曲线</span>
           <span id="activeWorkers">并发 0</span>
         </div>
         <canvas id="liveChart" width="900" height="88" aria-label="Token 实时曲线"></canvas>
       </div>
+    </section>
 
-      <div class="compact-actions">
-        <details id="advancedPanel">
-          <summary>参数设置</summary>
-          <div class="advanced">
-            <div class="advanced-grid">
-              <label class="mini-field model-field">模型 ID
-                <span class="model-row">
-                  <select class="select" id="modelName">
-                    <option value="">请先获取模型</option>
-                  </select>
-                  <button class="tiny-btn" id="fetchModelsBtn" type="button">获取模型</button>
-                </span>
-              </label>
-              <label class="mini-field">轮次
-                <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
-              </label>
-              <label class="mini-field">Token 预算
-                <input class="input" id="tokenBudget" type="number" min="100" max="10000000" step="100" value="100000">
-              </label>
-              <label class="mini-field">单次输出
-                <input class="input" id="maxTokens" type="number" min="16" max="8192" step="16" value="1024">
-              </label>
-              <label class="mini-field">温度
-                <input class="input" id="temperature" type="number" min="0" max="2" step="0.1" value="1">
-              </label>
-              <label class="mini-field">间隔 ms
-                <input class="input" id="intervalMs" type="number" min="0" max="60000" step="100" value="400">
-              </label>
-              <label class="mini-field">方法
-                <select class="select" id="method">
-                  <option value="POST">POST</option>
-                </select>
-              </label>
-              <label class="mini-field">提示词
-                <input class="input" id="promptText" type="text" value="请生成一段结构化、细节丰富、约 800 字的技术分析，主题是大模型推理服务的性能监控、成本控制和容量规划。">
-              </label>
-            </div>
-            <p class="notice">真实模式会调用你填写的接口并产生用量。若供应商拦截浏览器跨域请求，请填写支持 CORS 的兼容转发 URL。</p>
-            <div class="advanced-actions">
-              <button class="tiny-btn" id="closeSettingsBtn" type="button">应用</button>
-            </div>
-          </div>
-        </details>
-        <button class="tiny-btn" id="resetBtn" type="button">重置</button>
+    <section class="status-strip info-card" aria-label="最近状态">
+      <span class="status-pill" aria-live="polite"><span class="dot"></span><span id="runState">待机中</span></span>
+      <div class="event-list" id="eventList">
+        <div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>
       </div>
-
-      <section class="status-strip" aria-label="最近状态">
-        <div class="event-list" id="eventList">
-          <div class="event"><span class="event-badge">Ready</span><span>填写 URL / KEY 后获取模型并开始消耗</span></div>
-        </div>
-      </section>
     </section>
 
     <footer class="footer">
-      <span>GPT / Claude / CC 兼容</span>
-      <span>单页运行</span>
-      <span>KEY 仅留在当前浏览器</span>
+      <a href="https://netart.cn/" target="_blank" rel="noopener">Whoami</a>
+      <a href="https://github.com/gitstq/token-xiaohao" target="_blank" rel="noopener">源码</a>
+      <a href="https://github.com/ljxi/NetworkPanel" target="_blank" rel="noopener">参考UI</a>
     </footer>
   </main>
 
@@ -1362,6 +1528,7 @@
         : "延迟 -";
       $("requestBar").style.width = `${Math.min(100, state.completed / target * 100)}%`;
       $("activeWorkers").textContent = `并发 ${state.activeWorkers}`;
+      $("threadNumValue").textContent = String(settings.concurrency || 1);
     }
 
     function addEvent(badge, text, isError = false) {
@@ -1494,6 +1661,35 @@
     $("resetBtn").addEventListener("click", resetStats);
     $("fetchModelsBtn").addEventListener("click", fetchModels);
     $("closeSettingsBtn").addEventListener("click", () => { $("advancedPanel").open = false; });
+    $("settingsTrigger").addEventListener("click", () => {
+      $("advancedPanel").open = !$("advancedPanel").open;
+    });
+    $("chartToggleBtn").addEventListener("click", () => {
+      $("chartPanel").classList.toggle("is-visible");
+      drawChart();
+    });
+    $("copyUrlBtn").addEventListener("click", async () => {
+      const url = $("baseUrl").value.trim();
+      if (!url) {
+        addEvent("Error", "没有可复制的接口地址", true);
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        addEvent("Copy", "接口地址已复制");
+      } catch {
+        addEvent("Copy", url);
+      }
+    });
+    $("autoModels").addEventListener("change", () => {
+      if ($("autoModels").checked && $("baseUrl").value.trim() && $("apiKey").value.trim()) fetchModels();
+    });
+    $("baseUrl").addEventListener("change", () => {
+      if ($("autoModels").checked && $("apiKey").value.trim()) fetchModels();
+    });
+    $("apiKey").addEventListener("change", () => {
+      if ($("autoModels").checked && $("baseUrl").value.trim()) fetchModels();
+    });
 
     $("concurrencyRange").addEventListener("input", () => {
       $("concurrency").value = $("concurrencyRange").value;
