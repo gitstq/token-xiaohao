@@ -299,6 +299,107 @@
       gap: 7px;
     }
 
+    .native-select {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .select-widget {
+      position: relative;
+      min-width: 0;
+    }
+
+    .select-trigger {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-height: 32px;
+      align-items: center;
+      padding: 0 32px 0 11px;
+      border: 1px solid var(--control);
+      border-radius: 4px;
+      background: #ffffff;
+      color: #606266;
+      text-align: left;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .select-trigger::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid #a8abb2;
+      border-bottom: 1.5px solid #a8abb2;
+      transform: translateY(-65%) rotate(45deg);
+      transition: transform .18s ease;
+    }
+
+    .select-widget.is-open .select-trigger,
+    .select-trigger:focus {
+      border-color: var(--primary-soft);
+      box-shadow: 0 0 0 2px rgba(64, 158, 255, .12);
+    }
+
+    .select-widget.is-open .select-trigger::after {
+      transform: translateY(-25%) rotate(225deg);
+    }
+
+    .select-value {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .select-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 35;
+      display: none;
+      width: 100%;
+      max-height: 210px;
+      overflow: auto;
+      padding: 6px 0;
+      border: 1px solid #e4e7ed;
+      border-radius: 4px;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+    }
+
+    .select-widget.is-open .select-menu {
+      display: block;
+    }
+
+    .select-option {
+      display: block;
+      width: 100%;
+      min-height: 34px;
+      padding: 0 16px;
+      background: transparent;
+      color: #606266;
+      text-align: left;
+      line-height: 34px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .select-option:hover {
+      background: #f5f7fa;
+    }
+
+    .select-option.is-selected {
+      color: var(--primary-soft);
+      font-weight: 700;
+    }
+
     .url-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -1120,9 +1221,15 @@
           </label>
           <label class="mini-main">模型 ID：
             <span class="model-row">
-              <select class="select" id="modelName">
+              <select class="native-select" id="modelName" tabindex="-1" aria-hidden="true">
                 <option value="">请先获取模型</option>
               </select>
+              <span class="select-widget" id="modelSelectWidget">
+                <button class="select-trigger" id="modelSelectTrigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value" id="modelSelectValue">请先获取模型</span>
+                </button>
+                <span class="select-menu" id="modelSelectMenu" role="listbox"></span>
+              </span>
             </span>
           </label>
         </div>
@@ -1337,6 +1444,7 @@
       });
       $("baseUrl").value = defaults[provider].url;
       $("modelName").value = defaults[provider].model;
+      syncModelSelect();
       addEvent("Mode", `接口已切换为 ${provider === "openai" ? "GPT" : provider === "claude" ? "Claude / CC" : "自定义"}`);
     }
 
@@ -1416,6 +1524,7 @@
         if (!models.length) throw new Error("没有解析到模型 ID");
         fillModelOptions(models);
         $("modelName").value = models[0];
+        syncModelSelect();
         $("advancedPanel").open = false;
         addEvent("Models", `已获取 ${models.length} 个模型`);
       } catch (error) {
@@ -1443,6 +1552,31 @@
         ? models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("")
         : '<option value="">请先获取模型</option>';
       $("modelName").innerHTML = options;
+      renderModelSelect();
+    }
+
+    function renderModelSelect() {
+      const select = $("modelName");
+      $("modelSelectMenu").innerHTML = Array.from(select.options).map((option) => `
+        <button class="select-option ${option.selected ? "is-selected" : ""}" type="button" role="option" aria-selected="${option.selected ? "true" : "false"}" data-model="${escapeHtml(option.value)}">${escapeHtml(option.textContent)}</button>
+      `).join("");
+      syncModelSelect();
+    }
+
+    function syncModelSelect() {
+      const selected = $("modelName").selectedOptions[0];
+      const selectedText = selected && $("modelName").value ? selected.textContent : "请先获取模型";
+      $("modelSelectValue").textContent = selectedText;
+      Array.from($("modelSelectMenu").children).forEach((option) => {
+        const isSelected = option.dataset.model === $("modelName").value;
+        option.classList.toggle("is-selected", isSelected);
+        option.setAttribute("aria-selected", isSelected ? "true" : "false");
+      });
+    }
+
+    function closeModelSelect() {
+      $("modelSelectWidget").classList.remove("is-open");
+      $("modelSelectTrigger").setAttribute("aria-expanded", "false");
     }
 
     async function startRun() {
@@ -1769,7 +1903,8 @@
         "method",
         "promptText",
         "fetchModelsBtn",
-        "closeSettingsBtn"
+        "closeSettingsBtn",
+        "modelSelectTrigger"
       ].forEach((id) => { $(id).disabled = disabled; });
       $("resetBtn").disabled = disabled;
     }
@@ -1782,6 +1917,26 @@
     $("resetBtn").addEventListener("click", resetStats);
     $("fetchModelsBtn").addEventListener("click", fetchModels);
     $("closeSettingsBtn").addEventListener("click", () => { $("advancedPanel").open = false; });
+    $("modelSelectTrigger").addEventListener("click", () => {
+      if ($("modelSelectTrigger").disabled) return;
+      const widget = $("modelSelectWidget");
+      const shouldOpen = !widget.classList.contains("is-open");
+      widget.classList.toggle("is-open", shouldOpen);
+      $("modelSelectTrigger").setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+    });
+    $("modelSelectMenu").addEventListener("click", (event) => {
+      const option = event.target.closest("[data-model]");
+      if (!option) return;
+      $("modelName").value = option.dataset.model;
+      syncModelSelect();
+      closeModelSelect();
+    });
+    document.addEventListener("click", (event) => {
+      if (!$("modelSelectWidget").contains(event.target)) closeModelSelect();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeModelSelect();
+    });
     $("settingsTrigger").addEventListener("click", () => {
       $("advancedPanel").open = !$("advancedPanel").open;
     });
