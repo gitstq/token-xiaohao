@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Token 面板</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%235b62f4"/><path d="M18 18h28v8H36v22h-8V26H18z" fill="white"/></svg>'>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #eef7ff;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-strong: #ffffff;
+      --line: #d9e2ef;
+      --line-strong: #c9d6e8;
+      --text: #15223a;
+      --muted: #6b7890;
+      --soft: #8a97aa;
+      --blue: #5b62f4;
+      --blue-dark: #4352d8;
+      --cyan: #08bfd8;
+      --green: #48b86f;
+      --red: #e35d6a;
+      --amber: #d99b2b;
+      --shadow: 0 28px 80px rgba(60, 88, 120, 0.16);
+      --radius: 8px;
+      font-family: Inter, "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(91, 98, 244, 0.15), transparent 24rem),
+        radial-gradient(circle at 84% 18%, rgba(8, 191, 216, 0.12), transparent 24rem),
+        linear-gradient(180deg, #f9fcff 0 66px, var(--page) 66px 100%);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled,
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      cursor: not-allowed;
+      opacity: 0.62;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .topbar {
+      display: flex;
+      min-height: 66px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 0 20px;
+      border-bottom: 1px solid rgba(217, 226, 239, 0.74);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
+      color: #314369;
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6267f5, #5f8af8);
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(91, 98, 244, 0.24);
+      font-weight: 900;
+    }
+
+    .status {
+      display: inline-flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #4e5d78;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--soft);
+    }
+
+    body.running .dot {
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(72, 184, 111, 0.12);
+    }
+
+    .page {
+      display: grid;
+      min-height: calc(100vh - 66px);
+      align-content: start;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .console {
+      width: min(850px, 100%);
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid rgba(255, 255, 255, 0.84);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .settings {
+      display: grid;
+      gap: 18px;
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .label {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 720;
+    }
+
+    .field-stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .input,
+    .textarea,
+    .select {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      outline: 0;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--text);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .input,
+    .select {
+      padding: 0 10px;
+    }
+
+    .textarea {
+      min-height: 76px;
+      resize: vertical;
+      padding: 10px;
+      line-height: 1.52;
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: #5f8af8;
+      box-shadow: 0 0 0 3px rgba(95, 138, 248, 0.15);
+    }
+
+    .provider-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .segment {
+      min-height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      background: #fff;
+      color: #506078;
+      font-weight: 760;
+      transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .segment.active {
+      border-color: #5f8af8;
+      background: #edf4ff;
+      color: var(--blue-dark);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .switches {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      color: #2d3e5f;
+    }
+
+    .switch-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .track {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #dde3ee;
+      transition: background 0.18s ease;
+    }
+
+    .track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(25, 42, 74, 0.14);
+      transition: transform 0.18s ease;
+    }
+
+    .switch input:checked + .track {
+      background: #5f8af8;
+    }
+
+    .switch input:checked + .track::after {
+      transform: translateX(18px);
+    }
+
+    .range-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 64px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #4096ff;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      min-height: 110px;
+      padding: 20px 22px;
+      border: 1px solid var(--line-strong);
+      border-radius: 0;
+      background: rgba(255, 255, 255, 0.44);
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #23365d;
+      font-size: 19px;
+    }
+
+    .metric-icon {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      color: #5f6470;
+    }
+
+    .metric-icon.flow::before,
+    .metric-icon.speed::before,
+    .metric-icon.state::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 3px solid currentColor;
+    }
+
+    .metric-icon.flow::before {
+      border-radius: 11px;
+      border-top-color: transparent;
+    }
+
+    .metric-icon.speed::before {
+      border-radius: 50%;
+      border-left-color: transparent;
+    }
+
+    .metric-icon.speed::after {
+      content: "";
+      position: absolute;
+      left: 17px;
+      top: 17px;
+      width: 12px;
+      height: 3px;
+      border-radius: 999px;
+      background: currentColor;
+      transform: rotate(-38deg);
+      transform-origin: left center;
+    }
+
+    .metric-icon.state::before {
+      inset: 7px 12px;
+      border-radius: 4px;
+      transform: skewX(-12deg);
+    }
+
+    .metric-value {
+      margin-top: 18px;
+      color: #59616f;
+      font-size: 27px;
+      font-weight: 820;
+      letter-spacing: 0;
+    }
+
+    .metric-note {
+      margin-top: 5px;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .meter {
+      height: 4px;
+      margin-top: 13px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e7ecf4;
+    }
+
+    .meter span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #4096ff, #11c7d8);
+      transition: width 0.22s ease;
+    }
+
+    .action-zone {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+      padding: 28px 0 6px;
+    }
+
+    .main-action {
+      position: relative;
+      display: grid;
+      width: 146px;
+      height: 146px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6267f5, #566ff3);
+      box-shadow: 0 18px 34px rgba(86, 111, 243, 0.36);
+      color: #fff;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .main-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 44px rgba(86, 111, 243, 0.42);
+    }
+
+    .main-action .play {
+      width: 0;
+      height: 0;
+      margin-left: 8px;
+      border-top: 22px solid transparent;
+      border-bottom: 22px solid transparent;
+      border-left: 32px solid currentColor;
+    }
+
+    .main-action .stop {
+      display: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      background: currentColor;
+    }
+
+    body.running .main-action {
+      background: linear-gradient(135deg, #e35d6a, #d94d7a);
+      box-shadow: 0 18px 34px rgba(227, 93, 106, 0.28);
+    }
+
+    body.running .main-action .play {
+      display: none;
+    }
+
+    body.running .main-action .stop {
+      display: block;
+    }
+
+    .action-text {
+      color: #53627a;
+      font-size: 14px;
+      font-weight: 720;
+    }
+
+    .sparkline-panel {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .sparkline-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 88px;
+      border-radius: 7px;
+      background:
+        linear-gradient(rgba(71, 92, 126, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(71, 92, 126, 0.08) 1px, transparent 1px),
+        rgba(244, 248, 253, 0.7);
+      background-size: 100% 50%, 8.33% 100%;
+    }
+
+    .compact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tiny-btn,
+    summary {
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #49607e;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 720;
+    }
+
+    summary {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details {
+      display: grid;
+      gap: 12px;
+    }
+
+    details[open] summary {
+      border-color: #bcd1fb;
+      color: var(--blue-dark);
+    }
+
+    .advanced {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(248, 251, 255, 0.78);
+    }
+
+    .advanced-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-field {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .notice {
+      margin-top: 12px;
+      color: #7b6b3b;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .status-strip {
+      width: min(850px, 100%);
+      margin: 0 auto;
+      padding: 18px 24px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.76);
+      color: #23365d;
+      box-shadow: 0 14px 42px rgba(60, 88, 120, 0.1);
+    }
+
+    .event-list {
+      display: grid;
+      gap: 8px;
+      min-height: 50px;
+      justify-content: center;
+      text-align: left;
+      color: #314260;
+      font-size: 14px;
+    }
+
+    .event {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.45;
+    }
+
+    .event-badge {
+      min-width: 62px;
+      border: 1px solid #caedbd;
+      border-radius: 4px;
+      background: #f3ffe9;
+      color: #3bb55e;
+      padding: 2px 7px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .event-badge.error {
+      border-color: #ffd1d8;
+      background: #fff3f5;
+      color: var(--red);
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      color: #8a97aa;
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        padding: 0 12px;
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .page {
+        padding: 14px;
+      }
+
+      .console {
+        padding: 18px;
+        border-radius: 14px;
+      }
+
+      .line,
+      .split,
+      .range-wrap,
+      .advanced-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .metric {
+        min-height: 96px;
+        padding: 16px;
+      }
+
+      .main-action {
+        width: 118px;
+        height: 118px;
+      }
+
+      .provider-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">T</div>
+      <h1>Token 面板</h1>
+    </div>
+    <div class="status" aria-live="polite">
+      <span class="dot"></span>
+      <span id="runState">待机中</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="console" aria-label="Token 消耗面板">
+      <form class="settings" id="configForm">
+        <div class="line">
+          <label class="label">接口类型：</label>
+          <div class="provider-row" role="tablist" aria-label="接口类型">
+            <button class="segment active" type="button" data-provider="openai">GPT</button>
+            <button class="segment" type="button" data-provider="claude">Claude / CC</button>
+            <button class="segment" type="button" data-provider="custom">自定义</button>
+          </div>
+        </div>
+
+        <div class="line">
+          <label class="label" for="baseUrl">URL：</label>
+          <input class="input" id="baseUrl" type="url" value="https://api.openai.com/v1/chat/completions" autocomplete="off">
+        </div>
+
+        <div class="line">
+          <label class="label" for="apiKey">KEY：</label>
+          <input class="input" id="apiKey" type="password" placeholder="sk-... / 兼容接口密钥" autocomplete="off">
+        </div>
+
+        <div class="line">
+          <label class="label" for="concurrencyRange">线程数：</label>
+          <div class="range-wrap">
+            <input id="concurrencyRange" type="range" min="1" max="20" step="1" value="3">
+            <input class="input" id="concurrency" type="number" min="1" max="20" step="1" value="3">
+          </div>
+        </div>
+
+        <div class="switches">
+          <label class="switch-label">
+            <span class="switch">
+              <input id="demoMode" type="checkbox" checked>
+              <span class="track"></span>
+            </span>
+            演示模式
+          </label>
+          <label class="switch-label">
+            <span class="switch">
+              <input id="budgetGuard" type="checkbox" checked>
+              <span class="track"></span>
+            </span>
+            预算保护
+          </label>
+        </div>
+      </form>
+
+      <div class="metric-grid" aria-label="实时数据监控">
+        <article class="metric">
+          <div class="metric-top">
+            <span>总 Token</span>
+            <span class="metric-icon flow" aria-hidden="true"></span>
+          </div>
+          <div class="metric-value" id="totalTokens">-</div>
+          <div class="metric-note" id="budgetText">预算 100,000</div>
+          <div class="meter" aria-hidden="true"><span id="budgetBar"></span></div>
+        </article>
+
+        <article class="metric">
+          <div class="metric-top">
+            <span>平均速度</span>
+            <span class="metric-icon speed" aria-hidden="true"></span>
+          </div>
+          <div class="metric-value" id="throughput">-</div>
+          <div class="metric-note">最近 10 秒</div>
+          <div class="meter" aria-hidden="true"><span id="speedBar"></span></div>
+        </article>
+
+        <article class="metric">
+          <div class="metric-top">
+            <span>请求状态</span>
+            <span class="metric-icon state" aria-hidden="true"></span>
+          </div>
+          <div class="metric-value" id="requestState">-</div>
+          <div class="metric-note" id="latencyText">延迟 -</div>
+          <div class="meter" aria-hidden="true"><span id="requestBar"></span></div>
+        </article>
+      </div>
+
+      <div class="action-zone">
+        <button class="main-action" id="mainAction" type="button" aria-label="启动消耗">
+          <span class="play" aria-hidden="true"></span>
+          <span class="stop" aria-hidden="true"></span>
+        </button>
+        <div class="action-text" id="actionText">启动消耗</div>
+      </div>
+
+      <div class="sparkline-panel">
+        <div class="sparkline-head">
+          <span>实时曲线</span>
+          <span id="activeWorkers">并发 0</span>
+        </div>
+        <canvas id="liveChart" width="900" height="88" aria-label="Token 实时曲线"></canvas>
+      </div>
+
+      <div class="compact-actions">
+        <details id="advancedPanel">
+          <summary>参数设置</summary>
+          <div class="advanced">
+            <div class="advanced-grid">
+              <label class="mini-field">模型
+                <input class="input" id="modelName" type="text" value="gpt-4o-mini">
+              </label>
+              <label class="mini-field">轮次
+                <input class="input" id="rounds" type="number" min="1" max="10000" step="1" value="30">
+              </label>
+              <label class="mini-field">Token 预算
+                <input class="input" id="tokenBudget" type="number" min="100" max="10000000" step="100" value="100000">
+              </label>
+              <label class="mini-field">单次输出
+                <input class="input" id="maxTokens" type="number" min="16" max="8192" step="16" value="1024">
+              </label>
+              <label class="mini-field">温度
+                <input class="input" id="temperature" type="number" min="0" max="2" step="0.1" value="1">
+              </label>
+              <label class="mini-field">间隔 ms
+                <input class="input" id="intervalMs" type="number" min="0" max="60000" step="100" value="400">
+              </label>
+              <label class="mini-field">方法
+                <select class="select" id="method">
+                  <option value="POST">POST</option>
+                </select>
+              </label>
+              <label class="mini-field">提示词
+                <input class="input" id="promptText" type="text" value="请生成一段结构化、细节丰富、约 800 字的技术分析，主题是大模型推理服务的性能监控、成本控制和容量规划。">
+              </label>
+            </div>
+            <p class="notice">真实模式会调用你填写的接口并产生用量。若供应商拦截浏览器跨域请求，请填写支持 CORS 的兼容转发 URL。</p>
+          </div>
+        </details>
+        <button class="tiny-btn" id="resetBtn" type="button">重置</button>
+      </div>
+    </section>
+
+    <section class="status-strip" aria-label="最近状态">
+      <div class="event-list" id="eventList">
+        <div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>GPT / Claude / CC 兼容</span>
+      <span>单页运行</span>
+      <span>KEY 仅留在当前浏览器</span>
+    </footer>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const providerButtons = Array.from(document.querySelectorAll("[data-provider]"));
+    const formatNumber = (value) => Math.round(value || 0).toLocaleString("zh-CN");
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const defaults = {
+      openai: {
+        url: "https://api.openai.com/v1/chat/completions",
+        model: "gpt-4o-mini"
+      },
+      claude: {
+        url: "https://api.anthropic.com/v1/messages",
+        model: "claude-3-5-haiku-latest"
+      },
+      custom: {
+        url: "https://example.com/v1/chat/completions",
+        model: "custom-model"
+      }
+    };
+
+    const state = {
+      provider: "openai",
+      running: false,
+      aborter: null,
+      nextId: 1,
+      activeWorkers: 0,
+      completed: 0,
+      success: 0,
+      failed: 0,
+      totalTokens: 0,
+      lastLatency: 0,
+      latencies: [],
+      samples: [],
+      events: [],
+      settings: {}
+    };
+
+    function getSettings() {
+      return {
+        provider: state.provider,
+        demoMode: $("demoMode").checked,
+        budgetGuard: $("budgetGuard").checked,
+        url: $("baseUrl").value.trim(),
+        apiKey: $("apiKey").value.trim(),
+        model: $("modelName").value.trim(),
+        temperature: Number($("temperature").value),
+        maxTokens: Number($("maxTokens").value),
+        rounds: Number($("rounds").value),
+        concurrency: Number($("concurrency").value),
+        tokenBudget: Number($("tokenBudget").value),
+        intervalMs: Number($("intervalMs").value),
+        prompt: $("promptText").value.trim()
+      };
+    }
+
+    function setProvider(provider) {
+      state.provider = provider;
+      providerButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.provider === provider);
+      });
+      $("baseUrl").value = defaults[provider].url;
+      $("modelName").value = defaults[provider].model;
+      addEvent("Mode", `接口已切换为 ${provider === "openai" ? "GPT" : provider === "claude" ? "Claude / CC" : "自定义"}`);
+    }
+
+    function validateSettings(settings) {
+      if (!settings.demoMode) {
+        if (!settings.url) return "真实模式需要填写 URL";
+        if (!settings.apiKey) return "真实模式需要填写 KEY";
+      }
+      if (!settings.model) return "模型不能为空";
+      if (!settings.prompt) return "提示词不能为空";
+      if (!Number.isFinite(settings.rounds) || settings.rounds < 1) return "轮次必须大于 0";
+      if (!Number.isFinite(settings.concurrency) || settings.concurrency < 1) return "线程数必须大于 0";
+      if (!Number.isFinite(settings.tokenBudget) || settings.tokenBudget < 100) return "Token 预算至少为 100";
+      if (!Number.isFinite(settings.maxTokens) || settings.maxTokens < 16) return "单次输出至少为 16";
+      return "";
+    }
+
+    async function startRun() {
+      if (state.running) return stopRun();
+      const settings = getSettings();
+      const validation = validateSettings(settings);
+      if (validation) {
+        addEvent("Error", validation, true);
+        return;
+      }
+
+      state.settings = settings;
+      state.running = true;
+      state.aborter = new AbortController();
+      state.nextId = 1;
+      state.activeWorkers = 0;
+      state.completed = 0;
+      state.success = 0;
+      state.failed = 0;
+      state.totalTokens = 0;
+      state.lastLatency = 0;
+      state.latencies = [];
+      state.samples = [];
+      state.events = [];
+
+      document.body.classList.add("running");
+      $("runState").textContent = settings.demoMode ? "演示运行中" : "真实运行中";
+      $("mainAction").setAttribute("aria-label", "停止消耗");
+      $("actionText").textContent = "停止消耗";
+      setConfigDisabled(true);
+      updateMetrics();
+      drawChart();
+      addEvent("Start", `${settings.rounds} 轮 / ${settings.concurrency} 线程`);
+
+      const workers = Array.from({ length: settings.concurrency }, (_, index) => runWorker(index + 1));
+      await Promise.allSettled(workers);
+      const stoppedByBudget = settings.budgetGuard && state.totalTokens >= settings.tokenBudget;
+      finishRun(stoppedByBudget ? "达到预算" : "运行结束");
+    }
+
+    async function runWorker(workerId) {
+      while (state.running) {
+        const id = state.nextId++;
+        const budgetHit = state.settings.budgetGuard && state.totalTokens >= state.settings.tokenBudget;
+        if (id > state.settings.rounds || budgetHit) break;
+        state.activeWorkers += 1;
+        updateMetrics();
+
+        try {
+          const result = state.settings.demoMode
+            ? await demoRequest(id, workerId)
+            : await realRequest(id);
+          registerResult(id, true, result.tokens, result.latency, "");
+        } catch (error) {
+          const message = error && error.message ? error.message : String(error);
+          registerResult(id, false, 0, state.lastLatency, message);
+        } finally {
+          state.activeWorkers -= 1;
+          updateMetrics();
+        }
+
+        if (state.settings.intervalMs > 0) await sleep(state.settings.intervalMs);
+      }
+    }
+
+    async function demoRequest(id, workerId) {
+      const started = performance.now();
+      const latency = 360 + Math.round(Math.random() * 980) + workerId * 38;
+      await sleep(latency);
+      const promptTokens = estimateTokens(state.settings.prompt);
+      const outputTokens = Math.round(state.settings.maxTokens * (0.38 + Math.random() * 0.58));
+      return {
+        latency: Math.round(performance.now() - started),
+        tokens: promptTokens + outputTokens + id % 7
+      };
+    }
+
+    async function realRequest(id) {
+      const started = performance.now();
+      const response = await fetch(state.settings.url, {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(buildBody(id)),
+        signal: state.aborter.signal
+      });
+      const latency = Math.round(performance.now() - started);
+      const text = await response.text();
+      let payload = null;
+      try {
+        payload = text ? JSON.parse(text) : null;
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        const detail = payload?.error?.message || payload?.message || text.slice(0, 150) || response.statusText;
+        throw new Error(`${response.status} ${detail}`);
+      }
+
+      return {
+        latency,
+        tokens: extractUsageTokens(payload) || estimateTokens(state.settings.prompt) + Math.min(state.settings.maxTokens, 512)
+      };
+    }
+
+    function buildHeaders() {
+      const headers = { "content-type": "application/json" };
+      if (state.settings.provider === "claude") {
+        headers["x-api-key"] = state.settings.apiKey;
+        headers["anthropic-version"] = "2023-06-01";
+      } else {
+        headers.authorization = `Bearer ${state.settings.apiKey}`;
+      }
+      return headers;
+    }
+
+    function buildBody(id) {
+      const prompt = `${state.settings.prompt}\n\n批次编号：${id}\n请尽量展开细节，保持结构化输出。`;
+      if (state.settings.provider === "claude") {
+        return {
+          model: state.settings.model,
+          max_tokens: state.settings.maxTokens,
+          temperature: state.settings.temperature,
+          messages: [{ role: "user", content: prompt }]
+        };
+      }
+      return {
+        model: state.settings.model,
+        temperature: state.settings.temperature,
+        max_tokens: state.settings.maxTokens,
+        messages: [
+          { role: "system", content: "你是一个用于容量测试的内容生成助手。" },
+          { role: "user", content: prompt }
+        ]
+      };
+    }
+
+    function extractUsageTokens(payload) {
+      if (!payload || typeof payload !== "object") return 0;
+      const usage = payload.usage || {};
+      return Number(usage.total_tokens || 0)
+        || Number(usage.input_tokens || 0) + Number(usage.output_tokens || 0)
+        || Number(usage.prompt_tokens || 0) + Number(usage.completion_tokens || 0)
+        || 0;
+    }
+
+    function estimateTokens(text) {
+      const compact = String(text || "").replace(/\s+/g, "");
+      const latinWords = String(text || "").match(/[A-Za-z0-9_]+/g) || [];
+      return Math.max(1, Math.ceil(compact.length * 0.75 + latinWords.length * 0.35));
+    }
+
+    function registerResult(id, ok, tokens, latency, errorMessage) {
+      state.completed += 1;
+      if (ok) state.success += 1;
+      else state.failed += 1;
+      state.totalTokens += tokens;
+      state.lastLatency = latency;
+      if (latency) state.latencies.push(latency);
+      state.samples.push({ time: Date.now(), tokens, latency });
+      state.samples = state.samples.slice(-60);
+
+      addEvent(ok ? "OK" : "Error", ok
+        ? `#${id} ${formatNumber(tokens)} token / ${formatNumber(latency)}ms`
+        : `#${id} ${errorMessage}`, !ok);
+      updateMetrics();
+      drawChart();
+    }
+
+    function updateMetrics() {
+      const settings = state.settings.tokenBudget ? state.settings : getSettings();
+      const budget = Math.max(settings.tokenBudget || 1, 1);
+      const target = Math.max(settings.rounds || 1, 1);
+      const avgLatency = state.latencies.length
+        ? state.latencies.reduce((sum, item) => sum + item, 0) / state.latencies.length
+        : 0;
+      const recentTokens = state.samples
+        .filter((sample) => sample.time >= Date.now() - 10000)
+        .reduce((sum, sample) => sum + sample.tokens, 0);
+      const speed = recentTokens / 10;
+      const successRate = state.completed ? state.success / state.completed * 100 : 0;
+
+      $("totalTokens").textContent = state.totalTokens ? formatNumber(state.totalTokens) : "-";
+      $("budgetText").textContent = `预算 ${formatNumber(budget)}`;
+      $("budgetBar").style.width = `${Math.min(100, state.totalTokens / budget * 100)}%`;
+      $("throughput").textContent = speed ? `${formatNumber(speed)}/s` : "-";
+      $("speedBar").style.width = `${Math.min(100, speed / Math.max(1, settings.maxTokens * settings.concurrency / 2) * 100)}%`;
+      $("requestState").textContent = state.completed ? `${formatNumber(state.completed)} 次` : "-";
+      $("latencyText").textContent = state.completed
+        ? `成功 ${formatNumber(successRate)}% / ${formatNumber(avgLatency)}ms`
+        : "延迟 -";
+      $("requestBar").style.width = `${Math.min(100, state.completed / target * 100)}%`;
+      $("activeWorkers").textContent = `并发 ${state.activeWorkers}`;
+    }
+
+    function addEvent(badge, text, isError = false) {
+      state.events.unshift({ badge, text, isError });
+      state.events = state.events.slice(0, 3);
+      $("eventList").innerHTML = state.events.map((item) => `
+        <div class="event">
+          <span class="event-badge ${item.isError ? "error" : ""}">${escapeHtml(item.badge)}</span>
+          <span>${escapeHtml(item.text)}</span>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function drawChart() {
+      const canvas = $("liveChart");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const pad = 12;
+      ctx.clearRect(0, 0, width, height);
+
+      if (!state.samples.length) {
+        ctx.fillStyle = "#9aa7ba";
+        ctx.font = "13px Segoe UI";
+        ctx.fillText("启动后显示实时曲线", pad, height / 2 + 4);
+        return;
+      }
+
+      const samples = state.samples.slice(-34);
+      const maxTokens = Math.max(...samples.map((sample) => sample.tokens), 1);
+      const step = samples.length > 1 ? (width - pad * 2) / (samples.length - 1) : width - pad * 2;
+
+      ctx.beginPath();
+      samples.forEach((sample, index) => {
+        const x = pad + index * step;
+        const y = height - pad - sample.tokens / maxTokens * (height - pad * 2);
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = "#4096ff";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+
+      const last = samples[samples.length - 1];
+      const x = pad + (samples.length - 1) * step;
+      const y = height - pad - last.tokens / maxTokens * (height - pad * 2);
+      ctx.fillStyle = "#08bfd8";
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function stopRun() {
+      if (!state.running) return;
+      state.running = false;
+      if (state.aborter) state.aborter.abort();
+      finishRun("已停止");
+    }
+
+    function finishRun(message) {
+      if (!state.running && message !== "已停止") return;
+      state.running = false;
+      state.aborter = null;
+      document.body.classList.remove("running");
+      $("runState").textContent = message;
+      $("mainAction").setAttribute("aria-label", "启动消耗");
+      $("actionText").textContent = "启动消耗";
+      setConfigDisabled(false);
+      updateMetrics();
+      drawChart();
+      addEvent("Done", message);
+    }
+
+    function resetStats() {
+      if (state.running) return;
+      state.nextId = 1;
+      state.activeWorkers = 0;
+      state.completed = 0;
+      state.success = 0;
+      state.failed = 0;
+      state.totalTokens = 0;
+      state.lastLatency = 0;
+      state.latencies = [];
+      state.samples = [];
+      state.events = [];
+      $("eventList").innerHTML = '<div class="event"><span class="event-badge">Ready</span><span>默认演示模式不会发起真实请求</span></div>';
+      updateMetrics();
+      drawChart();
+    }
+
+    function setConfigDisabled(disabled) {
+      providerButtons.forEach((button) => { button.disabled = disabled; });
+      [
+        "demoMode",
+        "budgetGuard",
+        "baseUrl",
+        "apiKey",
+        "concurrencyRange",
+        "concurrency",
+        "modelName",
+        "rounds",
+        "tokenBudget",
+        "maxTokens",
+        "temperature",
+        "intervalMs",
+        "method",
+        "promptText"
+      ].forEach((id) => { $(id).disabled = disabled; });
+      $("resetBtn").disabled = disabled;
+    }
+
+    providerButtons.forEach((button) => {
+      button.addEventListener("click", () => setProvider(button.dataset.provider));
+    });
+
+    $("mainAction").addEventListener("click", startRun);
+    $("resetBtn").addEventListener("click", resetStats);
+
+    $("concurrencyRange").addEventListener("input", () => {
+      $("concurrency").value = $("concurrencyRange").value;
+      updateMetrics();
+    });
+    $("concurrency").addEventListener("input", () => {
+      const value = Math.min(20, Math.max(1, Number($("concurrency").value) || 1));
+      $("concurrencyRange").value = value;
+      updateMetrics();
+    });
+    ["rounds", "tokenBudget", "maxTokens"].forEach((id) => {
+      $(id).addEventListener("input", updateMetrics);
+    });
+
+    updateMetrics();
+    drawChart();
+  </script>
+</body>
+</html>
