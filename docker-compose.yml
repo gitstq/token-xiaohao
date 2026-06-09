@@ -1,0 +1,8 @@
+services:
+  token-xiaohao:
+    build: .
+    image: ghcr.io/gitstq/token-xiaohao:latest
+    container_name: token-xiaohao
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

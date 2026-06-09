@@ -1760,10 +1760,15 @@
       return parsed.toString();
     }
 
-    function buildLocalProxyUrl(targetUrl) {
-      const url = new URL("/", LOCAL_PROXY_ORIGIN);
+    function buildProxyUrl(proxyOrigin, targetUrl) {
+      const url = new URL(proxyOrigin === window.location.origin ? "/proxy" : "/", proxyOrigin);
       url.searchParams.set("target", targetUrl);
       return url.toString();
+    }
+
+    function getProxyOrigins() {
+      const origins = [window.location.origin, LOCAL_PROXY_ORIGIN];
+      return [...new Set(origins.filter((origin) => /^https?:\/\//i.test(origin)))];
     }
 
     function isBrowserNetworkError(error) {
@@ -1776,9 +1781,20 @@
         return await fetch(targetUrl, options);
       } catch (error) {
         if (!isBrowserNetworkError(error)) throw error;
-        const proxied = await fetch(buildLocalProxyUrl(targetUrl), options);
-        state.localProxyUsed = true;
-        return proxied;
+        let lastError = error;
+        for (const proxyOrigin of getProxyOrigins()) {
+          try {
+            const response = await fetch(buildProxyUrl(proxyOrigin, targetUrl), options);
+            const isProxyResponse = response.headers.get("x-token-xiaohao-proxy") === "1";
+            if (isProxyResponse) {
+              state.localProxyUsed = true;
+              return response;
+            }
+          } catch (proxyError) {
+            lastError = proxyError;
+          }
+        }
+        throw lastError;
       }
     }
 
@@ -1871,10 +1887,10 @@
     function formatRequestError(error) {
       const message = error && error.message ? error.message : String(error);
       if (message.includes(LOCAL_PROXY_ORIGIN)) {
-        return "请先启动本地代理：node local-proxy.js";
+        return "请先启动本地代理：node local-proxy.js，或使用 Docker 运行";
       }
       if (/Failed to fetch|NetworkError|Load failed/i.test(message)) {
-        return "接口未开放浏览器 CORS，且本地代理不可用";
+        return "接口未开放浏览器 CORS，且代理不可用";
       }
       return message;
     }

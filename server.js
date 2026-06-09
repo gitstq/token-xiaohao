@@ -1,8 +1,11 @@
 const http = require("node:http");
+const fs = require("node:fs");
+const path = require("node:path");
 const { URL } = require("node:url");
 
-const HOST = "127.0.0.1";
-const PORT = Number(process.env.PORT || 8787);
+const HOST = process.env.HOST || "0.0.0.0";
+const PORT = Number(process.env.PORT || 8080);
+const ROOT = __dirname;
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:"]);
 
 const corsHeaders = {
@@ -13,6 +16,17 @@ const corsHeaders = {
   "X-Token-Xiaohao-Proxy": "1"
 };
 
+const contentTypes = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".json": "application/json; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8"
+};
+
 function sendJson(res, status, body) {
   res.writeHead(status, {
     ...corsHeaders,
@@ -21,8 +35,35 @@ function sendJson(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
+function safeJoin(root, pathname) {
+  const normalized = path.normalize(decodeURIComponent(pathname)).replace(/^([/\\])+/, "");
+  const filePath = path.join(root, normalized || "index.html");
+  if (!filePath.startsWith(root)) return null;
+  return filePath;
+}
+
+function serveStatic(req, res) {
+  const requestUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+  let filePath = safeJoin(ROOT, requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname);
+  if (!filePath) {
+    sendJson(res, 403, { error: "Forbidden" });
+    return;
+  }
+
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    filePath = path.join(ROOT, "index.html");
+  }
+
+  const ext = path.extname(filePath).toLowerCase();
+  res.writeHead(200, {
+    "Content-Type": contentTypes[ext] || "application/octet-stream",
+    "Cache-Control": ext === ".html" ? "no-cache" : "public, max-age=3600"
+  });
+  fs.createReadStream(filePath).pipe(res);
+}
+
 function getTargetUrl(req) {
-  const localUrl = new URL(req.url, `http://${HOST}:${PORT}`);
+  const localUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const target = localUrl.searchParams.get("target");
   if (!target) return null;
 
@@ -31,7 +72,7 @@ function getTargetUrl(req) {
   return targetUrl;
 }
 
-const server = http.createServer(async (req, res) => {
+async function proxyRequest(req, res) {
   if (req.method === "OPTIONS") {
     res.writeHead(204, corsHeaders);
     res.end();
@@ -78,8 +119,22 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     sendJson(res, 502, { error: error.message || "Proxy request failed" });
   }
+}
+
+const server = http.createServer((req, res) => {
+  if (req.url.startsWith("/healthz")) {
+    sendJson(res, 200, { ok: true });
+    return;
+  }
+
+  if (req.url.startsWith("/proxy")) {
+    proxyRequest(req, res);
+    return;
+  }
+
+  serveStatic(req, res);
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`Local proxy listening on http://${HOST}:${PORT}`);
+  console.log(`Token Xiaohao is listening on http://${HOST}:${PORT}`);
 });

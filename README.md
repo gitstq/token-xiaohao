@@ -4,6 +4,7 @@
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-在线预览-5b62f4?style=for-the-badge&logo=github)](https://gitstq.github.io/token-xiaohao/)
 [![Open Source](https://img.shields.io/badge/GitHub-开源地址-181717?style=for-the-badge&logo=github)](https://github.com/gitstq/token-xiaohao)
+[![Docker](https://img.shields.io/badge/GHCR-token--xiaohao-2496ed?style=for-the-badge&logo=docker)](https://github.com/gitstq/token-xiaohao/pkgs/container/token-xiaohao)
 [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/gitstq/token-xiaohao)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/gitstq/token-xiaohao)
 
@@ -98,11 +99,54 @@ https://你的接口域名
 
 页面会先尝试直连；如果浏览器 CORS 拦截失败，会自动走本地代理，由本机网络环境转发请求。
 
-### 4. 常见本地启动问题
+### 4. Docker 运行
 
-- `请先启动本地代理：node local-proxy.js`：说明接口被 CORS 拦截，并且本地代理没有运行。
+Docker 方式会启动一个 Node 服务，同时提供网页和同源 `/proxy` 转发接口。相比普通静态页面，Docker 部署可以直接处理 CORS 转发，不依赖访问者电脑上的本地代理。
+
+使用 GHCR 镜像：
+
+```powershell
+docker run -d --name token-xiaohao -p 8080:8080 ghcr.io/gitstq/token-xiaohao:latest
+```
+
+浏览器访问：
+
+```text
+http://127.0.0.1:8080
+```
+
+使用 docker compose：
+
+```powershell
+docker compose up -d
+```
+
+本地构建镜像：
+
+```powershell
+docker build -t token-xiaohao:local .
+docker run --rm -p 8080:8080 token-xiaohao:local
+```
+
+如果你想发布到 Docker Hub，可以在本地重新打 tag 后推送：
+
+```powershell
+docker tag ghcr.io/gitstq/token-xiaohao:latest gitstq/token-xiaohao:latest
+docker push gitstq/token-xiaohao:latest
+```
+
+健康检查：
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8080/healthz
+```
+
+### 5. 常见本地启动问题
+
+- `请先启动本地代理：node local-proxy.js，或使用 Docker 运行`：说明接口被 CORS 拦截，并且当前页面没有可用代理。
 - `端口 5173 被占用`：换一个端口，例如 `python -m http.server 5174`。
 - `端口 8787 被占用`：用 `PORT` 指定代理端口，例如 `$env:PORT=8788; node local-proxy.js`，同时页面代码里的代理地址也需要对应调整。
+- `端口 8080 被占用`：Docker 运行时换端口，例如 `docker run -d -p 8081:8080 ghcr.io/gitstq/token-xiaohao:latest`。
 - 获取模型成功但启动失败：确认已选择模型 ID，并检查接口类型是否与请求体兼容。
 
 ## 🔌 接口兼容说明
@@ -123,6 +167,7 @@ https://你的接口域名
 解决方式：
 
 - 本地使用：启动 `node local-proxy.js`。
+- Docker 使用：容器内置同源 `/proxy` 转发，不需要额外本地代理。
 - 线上使用：部署一个公网代理服务，例如 Cloudflare Worker、Vercel Functions 或自己的服务器反代。
 - 服务端修复：让目标接口正确返回 CORS 响应头。
 
@@ -153,10 +198,33 @@ https://gitstq.github.io/token-xiaohao/
 可以直接点击 README 顶部的一键部署按钮，也可以手动导入仓库。
 这是纯静态项目，不需要构建命令，发布目录为仓库根目录。
 
+### Docker / 服务器
+
+服务器上推荐使用 Docker 镜像部署：
+
+```bash
+docker run -d --name token-xiaohao -p 8080:8080 --restart unless-stopped ghcr.io/gitstq/token-xiaohao:latest
+```
+
+如果需要放到域名后面，可以用 Nginx、Caddy 或反向代理平台转发到容器的 `8080` 端口。
+
+### Docker 镜像发布
+
+本仓库包含 `.github/workflows/docker.yml`，推送到 `main` 后会自动构建并发布多架构镜像：
+
+```text
+ghcr.io/gitstq/token-xiaohao:latest
+ghcr.io/gitstq/token-xiaohao:sha-<commit>
+```
+
+如果你想同步发布到 Docker Hub，可以基于当前工作流新增 Docker Hub 登录和第二个镜像标签。
+
 ### 线上代理
 
 线上页面不能使用访问者电脑上的 `127.0.0.1:8787` 作为公共代理。
-如果要让所有访问者都能稳定跨域请求，需要部署公网代理，并将页面中的代理地址改成你的公网代理地址。
+如果使用 GitHub Pages、Vercel、Netlify 这类纯静态部署，要让所有访问者都能稳定跨域请求，需要部署公网代理，并将页面中的代理地址改成你的公网代理地址。
+
+如果使用本项目 Docker 镜像部署，页面会优先尝试同源 `/proxy`，一般不需要额外配置公网代理。
 
 安全建议：
 
@@ -169,8 +237,11 @@ https://gitstq.github.io/token-xiaohao/
 
 ```text
 token-xiaohao/
+├─ Dockerfile          # Docker 镜像构建文件
+├─ docker-compose.yml  # Docker Compose 示例
 ├─ index.html          # 主页面，所有 UI 与请求逻辑
 ├─ local-proxy.js      # 本地 CORS 转发代理
+├─ server.js           # Docker 服务端，提供静态页面和同源代理
 ├─ README.md           # 项目文档
 └─ assets/             # 截图资源
 ```
